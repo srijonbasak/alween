@@ -1,0 +1,89 @@
+@import "tailwindcss";
+
+:root {
+  --background: #FFFFFF; /* Pure White background */
+  --foreground: #0C0A09; /* Deep stone-950 dark text */
+  --card: #FDFCFB; /* Soft warm light alabaster card */
+  --card-foreground: #0C0A09;
+  --popover: #FFFFFF;
+  --popover-foreground: #0C0A09;
+  --primary: #C5A880; /* Luxury Champagne Gold */
+  --primary-foreground: #0C0A09; /* Dark text on gold button for readability */
+  --secondary: #F5F2EB; /* Soft light cream secondary panels */
+  --secondary-foreground: #0C0A09;
+  --muted: #F9F7F2;
+  --muted-foreground: #78716C; /* Stone 500 details */
+  --accent: #AA7C11; /* Deeper Luxury Gold */
+  --accent-foreground: #FFFFFF;
+  --destructive: #EF4444;
+  --destructive-foreground: #FFFFFF;
+  --border: #EAE5DB; /* Warm cream/stone light border */
+  --input: #FDFCFB;
+  --ring: #C5A880;
+  
+  --font-serif: var(--font-cormorant);
+  --font-sans: var(--font-inter);
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --font-sans: var(--font-sans);
+  --font-serif: var(--font-serif);
+}
+
+body {
+  background-color: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-sans), sans-serif;
+  overflow-x: hidden;
+}
+
+h1, h2, h3, h4, h5, h6, .font-serif {
+  font-family: var(--font-serif), serif; /* Reverting to Serif for the White & Gold luxury look */
+}
+
+/* AI Scent Labs styling rules */
+.glass {
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(197, 168, 128, 0.15);
+}
+
+.glass-hover {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.glass-hover:hover {
+  background: rgba(255, 255, 255, 0.95);
+  border-color: rgba(197, 168, 128, 0.35);
+  box-shadow: 0 10px 30px rgba(197, 168, 128, 0.08);
+}
+
+/* Custom Scrollbar for Light Luxury Aesthetics */
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-track {
+  background: #FFFFFF;
+}
+::-webkit-scrollbar-thumb {
+  background: #EAE5DB;
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #C5A880;
+}
