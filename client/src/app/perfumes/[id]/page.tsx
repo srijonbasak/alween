@@ -6,6 +6,7 @@ import { Header } from '../../../components/Header';
 import { CheckoutDrawer } from '../../../components/CheckoutDrawer';
 import { useCart } from '../../../context/CartContext';
 import { VimeoVideo } from '../../../components/VimeoVideo';
+import { API_URL } from '../../../lib/api';
 import { motion } from 'framer-motion';
 import { ShoppingCart, Award, Sparkles, X, Heart, Eye, ArrowLeft, Loader2 } from 'lucide-react';
 
@@ -30,6 +31,15 @@ interface Perfume {
   price15ml?: number;
   price30ml?: number;
   price50ml?: number;
+  perfumeCategory?: 'inspired' | 'original';
+  oilConcentration?: string;
+  image6ml?: string;
+  image10ml?: string;
+  image15ml?: string;
+  image30ml?: string;
+  image50ml?: string;
+  originalBottleImage?: string;
+  packagingImage?: string;
 }
 
 export default function PerfumeProductPage({ params }: { params: Promise<{ id: string }> }) {
@@ -60,7 +70,7 @@ export default function PerfumeProductPage({ params }: { params: Promise<{ id: s
       }
     }
 
-    fetch(`http://localhost:5000/api/perfumes/${id}`)
+    fetch(`${API_URL}/api/perfumes/${id}`)
       .then(res => {
         if (!res.ok) throw new Error();
         return res.json();
@@ -108,6 +118,50 @@ export default function PerfumeProductPage({ params }: { params: Promise<{ id: s
     return perfume.pricePerMl * selectedSize;
   };
 
+  // Dynamic images logic based on size selected
+  const getPerfumeImages = (): string[] => {
+    if (!perfume) return [];
+    if (perfume.perfumeCategory === 'original') {
+      return perfume.imageUrls && perfume.imageUrls.length > 0 ? perfume.imageUrls : ['https://images.unsplash.com/photo-1547887537-6158d64c35b3?auto=format&fit=crop&q=80&w=600'];
+    }
+    
+    const images: string[] = [];
+    
+    // Size-specific image
+    const sizeKey = `image${selectedSize}ml` as keyof typeof perfume;
+    const sizeImage = perfume[sizeKey] as string | undefined;
+    if (sizeImage && sizeImage.trim() !== '') {
+      images.push(sizeImage);
+    }
+    
+    // Original bottle
+    if (perfume.originalBottleImage && perfume.originalBottleImage.trim() !== '') {
+      images.push(perfume.originalBottleImage);
+    }
+    
+    // Packaging
+    if (perfume.packagingImage && perfume.packagingImage.trim() !== '') {
+      images.push(perfume.packagingImage);
+    }
+    
+    // Fallback to primary image URL
+    if (images.length === 0 && perfume.imageUrls && perfume.imageUrls.length > 0) {
+      images.push(perfume.imageUrls[0]);
+    }
+    
+    // Append remaining images
+    if (perfume.imageUrls) {
+      perfume.imageUrls.forEach(url => {
+        if (!images.includes(url)) images.push(url);
+      });
+    }
+    
+    return images;
+  };
+
+  const activeImages = getPerfumeImages();
+  const mainImage = activeImages[activeImageIdx] || activeImages[0] || 'https://images.unsplash.com/photo-1547887537-6158d64c35b3?auto=format&fit=crop&q=80&w=600';
+
   const currentPrice = getCalculatedPrice();
 
   const handleAddToBasket = () => {
@@ -143,18 +197,16 @@ export default function PerfumeProductPage({ params }: { params: Promise<{ id: s
             <div className="lg:col-span-6 space-y-4">
               <div className="relative aspect-square w-full overflow-hidden rounded-2xl bg-slate-50 border border-slate-100 shadow-sm">
                 <img
-                  src={perfume.imageUrls && perfume.imageUrls.length > 0
-                    ? perfume.imageUrls[activeImageIdx]
-                    : 'https://images.unsplash.com/photo-1547887537-6158d64c35b3?auto=format&fit=crop&q=80&w=600'}
+                  src={mainImage}
                   alt={perfume.name}
                   className="h-full w-full object-cover"
                 />
               </div>
 
               {/* Thumbnails list */}
-              {perfume.imageUrls && perfume.imageUrls.length > 1 && (
+              {activeImages.length > 1 && (
                 <div className="flex gap-2 overflow-x-auto py-1">
-                  {perfume.imageUrls.map((url, index) => (
+                  {activeImages.map((url, index) => (
                     <button
                       key={index}
                       onClick={() => setActiveImageIdx(index)}
@@ -174,11 +226,16 @@ export default function PerfumeProductPage({ params }: { params: Promise<{ id: s
               <div>
                 <div className="flex items-center gap-2 mb-3">
                   <span className="bg-stone-50 border border-stone-200 text-stone-700 text-[8px] font-extrabold tracking-widest px-2 py-0.5 rounded font-mono uppercase">
-                    Single Fragrance
+                    {perfume.perfumeCategory === 'original' ? 'Original Bottle' : 'Inspired Scent'}
                   </span>
+                  {perfume.perfumeCategory !== 'original' && perfume.oilConcentration && (
+                    <span className="bg-[#FAF8F5] border border-[#EAE5DB] text-slate-700 text-[8px] font-bold tracking-widest px-2 py-0.5 rounded font-mono uppercase">
+                      Concentration: {perfume.oilConcentration}
+                    </span>
+                  )}
                   {perfume.isExcludedFromDiscounts && (
-                    <span className="bg-red-50 border border-red-150 text-red-600 text-[8px] font-bold tracking-widest px-2 py-0.5 rounded font-mono uppercase">
-                      Excluded
+                    <span className="bg-red-50 border border-red-150 text-red-650 text-[8px] font-bold tracking-widest px-2 py-0.5 rounded font-mono uppercase">
+                      No Discounts
                     </span>
                   )}
                 </div>
@@ -188,7 +245,7 @@ export default function PerfumeProductPage({ params }: { params: Promise<{ id: s
                 </h1>
                 
                 <div className="text-[10px] text-slate-400 font-mono tracking-widest mt-1.5 mb-6 uppercase flex justify-between max-w-[200px]">
-                  <span>Formula SKU:</span>
+                  <span>Product SKU:</span>
                   <span className="font-bold text-slate-800">{perfume.internalFormulaKey}</span>
                 </div>
 
@@ -205,7 +262,7 @@ export default function PerfumeProductPage({ params }: { params: Promise<{ id: s
                   {/* Extract Decant Bottle Size Selector */}
                   <div>
                     <label className="block text-[10px] font-bold tracking-wider text-slate-400 uppercase font-mono mb-3">
-                      EXTRACT DECANT SIZE (ML)
+                      SELECT BOTTLE SIZE
                     </label>
                     <div className="grid grid-cols-5 gap-2 max-w-md">
                       {[6, 10, 15, 30, 50].map((size) => (
@@ -260,7 +317,7 @@ export default function PerfumeProductPage({ params }: { params: Promise<{ id: s
               <div className="pt-6 border-t border-slate-100 max-w-md">
                 <div className="flex justify-between items-baseline mb-4 font-mono">
                   <span className="text-[10px] font-bold tracking-wider text-slate-400">
-                    CALCULATED PRICE
+                    {perfume.perfumeCategory === 'original' ? 'PRICE PER ML' : 'PRICE'}
                   </span>
                   <span className="text-primary font-bold text-2xl">
                     {currentPrice.toFixed(2)} BDT
@@ -270,7 +327,7 @@ export default function PerfumeProductPage({ params }: { params: Promise<{ id: s
                   onClick={handleAddToBasket}
                   className="w-full rounded-lg bg-primary py-3.5 text-xs font-bold tracking-widest text-slate-900 hover:bg-primary/80 transition flex items-center justify-center gap-2 shadow-md shadow-primary/10 hover:shadow-lg"
                 >
-                  <ShoppingCart className="h-4.5 w-4.5" /> ADD TO SCENT BASKET
+                  <ShoppingCart className="h-4.5 w-4.5" /> ADD TO CART
                 </button>
               </div>
 
@@ -280,9 +337,9 @@ export default function PerfumeProductPage({ params }: { params: Promise<{ id: s
           {/* Vimeo Presentation Panel */}
           {perfume.vimeoUrl && (
             <div className="mt-20 border-t border-slate-100 pt-16 max-w-4xl mx-auto text-center">
-              <span className="text-[9px] font-bold tracking-[0.3em] text-primary uppercase font-mono">ATMOSPHERIC FILM</span>
+              <span className="text-[9px] font-bold tracking-[0.3em] text-primary uppercase font-mono">BRAND VIDEO</span>
               <h2 className="font-sans text-2xl font-black tracking-tight text-slate-900 mt-2 mb-6 uppercase">
-                SCENT MOLECULAR STORY
+                SCENT INSPIRATION STORY
               </h2>
               <VimeoVideo url={perfume.vimeoUrl} />
             </div>
@@ -291,8 +348,37 @@ export default function PerfumeProductPage({ params }: { params: Promise<{ id: s
         </div>
       </main>
 
-      <footer className="bg-[#FAF8F5] border-t border-[#EAE5DB] py-8 text-center text-xs text-slate-400 font-mono mt-16">
-        <p>© 2026 ALWEEN LUXURY SCENTS. ALL RIGHTS RESERVED.</p>
+      <footer className="bg-slate-900 text-slate-400 py-12 border-t border-slate-800 font-sans mt-16">
+        <div className="max-w-6xl mx-auto px-6 grid grid-cols-1 md:grid-cols-3 gap-8 text-left text-xs">
+          {/* Brand column */}
+          <div className="space-y-3">
+            <h4 className="text-white font-bold tracking-wider text-sm">ALWEEN LUXURY</h4>
+            <p className="text-slate-500 font-light leading-relaxed">
+              Premium designer perfume decants in Bangladesh. Experience authentic high-end fragrances in affordable bottle sizes.
+            </p>
+          </div>
+          {/* Support column */}
+          <div className="space-y-3">
+            <h4 className="text-white font-bold tracking-wider text-sm">CUSTOMER SUPPORT</h4>
+            <p className="text-slate-500 font-light">Email: support@alween.com</p>
+            <p className="text-slate-500 font-light">Helpline: +880 1322-309746</p>
+            <p className="text-slate-500 font-light">Dhaka, Bangladesh</p>
+          </div>
+          {/* Policies column */}
+          <div className="space-y-3">
+            <h4 className="text-white font-bold tracking-wider text-sm">LEGAL & POLICIES</h4>
+            <div className="flex flex-col gap-1.5 text-slate-500">
+              <button type="button" onClick={() => alert('PRIVACY POLICY\n\nYour privacy is important to us. We secure your personal credentials and order history. We do not sell or lease customer information to third parties.')} className="text-left hover:text-white transition">Privacy Policy</button>
+              <button type="button" onClick={() => alert('RETURN & REFUND POLICY\n\nDue to the hygiene nature of decanted fragrances, we do not accept returns. However, if your order arrives damaged, leaking, or incorrect, please email support@alween.com with photos within 24 hours of delivery for a replacement.')} className="text-left hover:text-white transition">Return & Refund Policy</button>
+              <button type="button" onClick={() => alert('SHIPPING & DELIVERY POLICY\n\nWe ship nationwide across Bangladesh. Delivery inside Dhaka takes 2-3 business days (60 BDT). Delivery outside Dhaka takes 3-5 business days (120 BDT). Free shipping applies on orders above 3000 BDT.')} className="text-left hover:text-white transition">Shipping Policy</button>
+              <button type="button" onClick={() => alert('TERMS OF SERVICE\n\nBy placing an order, you agree to our terms. Scent decants are hand-poured from original authentic bottles into sterile glass vials. We are an independent decanter and not affiliated with the brand owners.')} className="text-left hover:text-white transition">Terms of Service</button>
+            </div>
+          </div>
+        </div>
+        <div className="max-w-6xl mx-auto px-6 border-t border-slate-800 mt-8 pt-6 text-center text-[10px] text-slate-600 font-mono flex flex-col sm:flex-row justify-between gap-4">
+          <p>© 2026 ALWEEN LUXURY SCENTS. ALL RIGHTS RESERVED.</p>
+          <p>DECLARATION: Independent decanter, not affiliated with perfume design houses.</p>
+        </div>
       </footer>
 
       <CheckoutDrawer />

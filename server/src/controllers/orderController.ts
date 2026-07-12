@@ -445,3 +445,42 @@ export const updateOrderStatus = async (req: Request, res: Response): Promise<vo
     res.status(500).json({ error: 'Failed to update order status.', message: error.message });
   }
 };
+
+export const updateOrderFields = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const { orderId } = req.params;
+    const { customerName, customerPhone, customerEmail, address, totalPrice, items } = req.body;
+
+    const order = await Order.findById(orderId);
+    if (!order) {
+      res.status(404).json({ error: 'Order not found.' });
+      return;
+    }
+
+    if (customerName !== undefined) order.customerName = customerName;
+    if (customerPhone !== undefined) order.customerPhone = customerPhone;
+    if (customerEmail !== undefined) order.customerEmail = customerEmail;
+    if (address !== undefined) order.address = address;
+    if (totalPrice !== undefined) order.totalPrice = totalPrice;
+    if (items !== undefined) order.items = items;
+
+    await order.save();
+    res.json(order);
+  } catch (error: any) {
+    res.status(500).json({ error: 'Failed to update order fields.', message: error.message });
+  }
+};
+
+export const deleteOrder = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const { orderId } = req.params;
+    const deleted = await Order.findByIdAndDelete(orderId);
+    if (!deleted) {
+      res.status(404).json({ error: 'Order not found.' });
+      return;
+    }
+    res.json({ message: 'Order deleted successfully.' });
+  } catch (error: any) {
+    res.status(500).json({ error: 'Failed to delete order.', message: error.message });
+  }
+};

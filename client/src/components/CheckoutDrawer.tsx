@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { useCart } from '../context/CartContext';
+import { API_URL } from '../lib/api';
 import { Drawer } from 'vaul';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, MapPin, AlertTriangle, ShieldCheck, Ticket, Check, Loader2, Cpu } from 'lucide-react';
@@ -57,7 +58,7 @@ export const CheckoutDrawer: React.FC = () => {
       } catch (e) {}
     }
 
-    fetch('http://localhost:5000/api/config')
+    fetch(`${API_URL}/api/config`)
       .then(res => {
         if (res.ok) return res.json();
       })
@@ -187,7 +188,7 @@ export const CheckoutDrawer: React.FC = () => {
     if (!code) return;
 
     try {
-      const response = await fetch(`http://localhost:5000/api/coupons/validate?code=${code}`);
+      const response = await fetch(`${API_URL}/api/coupons/validate?code=${code}`);
       const data = await response.json();
       if (!response.ok) {
         throw new Error(data.error || 'Invalid coupon code.');
@@ -244,7 +245,7 @@ export const CheckoutDrawer: React.FC = () => {
     };
 
     try {
-      const response = await fetch('http://localhost:5000/api/orders', {
+      const response = await fetch(`${API_URL}/api/orders`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -280,8 +281,8 @@ export const CheckoutDrawer: React.FC = () => {
           <div className="flex items-center justify-between px-6 pb-4 border-b border-slate-100">
             <Drawer.Title className="font-sans text-sm sm:text-lg tracking-wide text-primary font-bold flex items-center gap-1.5">
               <Cpu className="h-4.5 w-4.5" />
-              <span className="hidden sm:inline">MOLECULAR FULFILLMENT CHECKOUT</span>
-              <span className="inline sm:hidden">LAB CHECKOUT</span>
+              <span className="hidden sm:inline">SECURE ORDER CHECKOUT</span>
+              <span className="inline sm:hidden">CHECKOUT</span>
             </Drawer.Title>
             <button 
               onClick={() => setIsDrawerOpen(false)} 
@@ -301,13 +302,13 @@ export const CheckoutDrawer: React.FC = () => {
                 <div className="flex h-16 w-16 items-center justify-center rounded-full bg-blue-50 text-primary border border-blue-200 mb-6">
                   <ShieldCheck className="h-8 w-8" />
                 </div>
-                <h3 className="font-sans text-2xl font-bold text-slate-900 mb-2">SYNTHESIS ALLOCATED</h3>
+                <h3 className="font-sans text-2xl font-bold text-slate-900 mb-2">ORDER PLACED</h3>
                 <p className="text-slate-500 text-sm max-w-sm mb-6">
-                  Your scent formula order has been successfully logged. Scent lab technicians are compiling your extraction matrix.
+                  Your scent order has been successfully logged. Our team is preparing your custom package.
                 </p>
                 <div className="w-full max-w-md bg-slate-50 rounded-xl p-5 border border-slate-200 text-left mb-8">
                   <div className="flex justify-between border-b border-slate-100 pb-2 mb-2 text-xs text-slate-500 font-mono">
-                    <span>ORDER MATRIX ID</span>
+                    <span>ORDER ID</span>
                     <span className="font-bold text-slate-800">{orderSuccess.orderNumber}</span>
                   </div>
                   <div className="flex justify-between text-xs text-slate-500 font-mono">
@@ -316,12 +317,12 @@ export const CheckoutDrawer: React.FC = () => {
                   </div>
                   <div className="mt-4 pt-4 border-t border-slate-150 text-center font-mono">
                     <a 
-                      href={`http://localhost:5000/invoices/${orderSuccess.orderNumber}.pdf`}
+                      href={`${API_URL}/api/invoices/${orderSuccess.orderNumber}.pdf`}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="inline-block text-xs font-bold text-primary hover:underline"
                     >
-                      DOWNLOAD PICKING SLIP PDF
+                      DOWNLOAD INVOICE PDF
                     </a>
                   </div>
                 </div>
@@ -332,7 +333,7 @@ export const CheckoutDrawer: React.FC = () => {
                   }}
                   className="w-full max-w-xs rounded-xl bg-primary py-3.5 text-xs font-bold tracking-widest text-white hover:bg-blue-700 transition shadow-md shadow-blue-500/10"
                 >
-                  RETURN TO SCENT ENGINE
+                  RETURN TO STORE
                 </button>
               </motion.div>
             ) : (
@@ -342,7 +343,7 @@ export const CheckoutDrawer: React.FC = () => {
                   <form onSubmit={handleSubmit} className="space-y-6">
                     <div>
                       <h4 className="font-sans text-sm tracking-wider text-slate-800 border-b border-slate-100 pb-2 mb-4 font-bold">
-                        MOLECULAR RECIPIENT
+                        CUSTOMER DETAILS
                       </h4>
                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <div>
@@ -379,7 +380,7 @@ export const CheckoutDrawer: React.FC = () => {
                         <input
                           type="email"
                           required
-                          placeholder="client@scentlab.ai"
+                          placeholder="customer@gmail.com"
                           value={email}
                           onChange={(e) => setEmail(e.target.value)}
                           className="w-full bg-white border border-slate-200 rounded-lg px-3 py-2 text-sm text-slate-900 focus:outline-none focus:border-primary"
@@ -390,7 +391,7 @@ export const CheckoutDrawer: React.FC = () => {
                     <div>
                       <div className="flex items-center justify-between border-b border-slate-100 pb-2 mb-4">
                         <h4 className="font-sans text-sm tracking-wider text-slate-800 font-bold">
-                          DELIVERY NODE
+                          SHIPPING ADDRESS
                         </h4>
                         <button
                           type="button"
@@ -536,10 +537,10 @@ export const CheckoutDrawer: React.FC = () => {
                       {isSubmitting ? (
                         <>
                           <Loader2 className="h-4 w-4 animate-spin" />
-                          ALLOCATING WAREHOUSE MATRIX...
+                          PROCESSING YOUR ORDER...
                         </>
                       ) : (
-                        'PLACE ORDER & RETRIEVE INVOICE'
+                        'CONFIRM & PLACE ORDER'
                       )}
                     </button>
                   </form>
@@ -548,7 +549,7 @@ export const CheckoutDrawer: React.FC = () => {
                 {/* Cart summary (Right) */}
                 <div className="lg:col-span-5 bg-slate-50 border border-slate-200 rounded-2xl p-5">
                   <h4 className="font-sans text-sm tracking-wider text-slate-800 border-b border-slate-200 pb-2 mb-4 font-bold">
-                    SYNTHESIS BASKET
+                    SHOPPING CART
                   </h4>
                   {cart.length === 0 ? (
                     <div className="text-slate-400 text-xs text-center py-6">Your basket is empty</div>
@@ -566,7 +567,7 @@ export const CheckoutDrawer: React.FC = () => {
                               <span>Qty: {item.quantity}</span>
                               {item.isCustomCombo && (
                                 <span className="bg-white border border-slate-200 px-1.5 py-0.5 rounded text-[8px] text-primary">
-                                  Matrix Combo
+                                  Custom Combo
                                 </span>
                               )}
                             </div>
@@ -585,7 +586,7 @@ export const CheckoutDrawer: React.FC = () => {
                     <div className="flex gap-2">
                       <input
                         type="text"
-                        placeholder="e.g. SRIJON10"
+                        placeholder="e.g. ALWEEN20"
                         value={couponCode}
                         onChange={(e) => setCouponCode(e.target.value)}
                         className="flex-1 bg-white border border-slate-200 rounded-lg px-2.5 py-1.5 text-xs uppercase focus:outline-none font-mono"

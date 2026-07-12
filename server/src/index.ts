@@ -5,6 +5,7 @@ import cookieParser from 'cookie-parser';
 import dotenv from 'dotenv';
 import apiRouter from './routes/api';
 import { corsSpeedup } from './middlewares/corsSpeedup';
+import { sanitizeMiddleware } from './middlewares/sanitize';
 import Order from './models/Order';
 import { streamInvoice } from './workers/invoiceGenerator';
 
@@ -18,6 +19,7 @@ const PORT = process.env.PORT || 5000;
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
+app.use(sanitizeMiddleware);
 
 // Apply Custom CORS preflight and cache header optimizations
 app.use(corsSpeedup);
@@ -28,7 +30,7 @@ app.use(corsSpeedup);
 app.use('/uploads', express.static(path.join(__dirname, '../public/uploads')));
 
 // Serve generated laboratory picking slip invoices dynamically on-the-fly directly to the browser
-app.get('/invoices/:filename', async (req, res) => {
+app.get(['/invoices/:filename', '/api/invoices/:filename'], async (req, res) => {
   try {
     const filename = req.params.filename;
     const orderNumber = filename.replace('.pdf', '');

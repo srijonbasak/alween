@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { Header } from '../../components/Header';
 import { CheckoutDrawer } from '../../components/CheckoutDrawer';
+import { API_URL } from '../../lib/api';
 import { Award, User, Copy, Check, Info, Users, Gift, ShieldAlert } from 'lucide-react';
 
 export default function AffiliatePage() {
@@ -24,15 +25,19 @@ export default function AffiliatePage() {
   const [copiedCoupon, setCopiedCoupon] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
   const [successMsg, setSuccessMsg] = useState('');
+  const [siteOrigin, setSiteOrigin] = useState('http://localhost:3000');
 
   // Fetch current session on mount
   useEffect(() => {
     fetchProfile();
+    if (typeof window !== 'undefined') {
+      setSiteOrigin(window.location.origin);
+    }
   }, []);
 
   const fetchProfile = async () => {
     try {
-      const response = await fetch('http://localhost:5000/api/auth/me');
+      const response = await fetch(`${API_URL}/api/auth/me`);
       if (response.ok) {
         const userData = await response.json();
         setCurrentUser(userData);
@@ -49,7 +54,7 @@ export default function AffiliatePage() {
 
   const fetchAffiliateStats = async () => {
     try {
-      const res = await fetch('http://localhost:5000/api/affiliates/me');
+      const res = await fetch(`${API_URL}/api/affiliates/me`);
       if (res.ok) {
         const data = await res.json();
         setAffProfile(data.affiliate);
@@ -72,7 +77,7 @@ export default function AffiliatePage() {
       : { email, password };
 
     try {
-      const response = await fetch(`http://localhost:5000/api/auth/${endpoint}`, {
+      const response = await fetch(`${API_URL}/api/auth/${endpoint}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload)
@@ -110,7 +115,7 @@ export default function AffiliatePage() {
     setErrorMsg('');
 
     try {
-      const response = await fetch('http://localhost:5000/api/auth/toggle-affiliate', {
+      const response = await fetch(`${API_URL}/api/auth/toggle-affiliate`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ username: affRefName })
@@ -130,7 +135,7 @@ export default function AffiliatePage() {
   };
 
   const handleLogout = async () => {
-    await fetch('http://localhost:5000/api/auth/logout', { method: 'POST' });
+    await fetch(`${API_URL}/api/auth/logout`, { method: 'POST' });
     setIsLoggedIn(false);
     setCurrentUser(null);
     setAffProfile(null);
@@ -246,7 +251,7 @@ export default function AffiliatePage() {
                       className="w-full bg-[#FAF9F6] border border-slate-200 rounded-lg px-3 py-2 text-sm text-slate-900 focus:outline-none focus:border-primary focus:bg-white font-mono lowercase"
                     />
                     <span className="block text-[9px] text-slate-400 mt-1.5 font-mono">
-                      Your link will be: http://localhost:3000/?ref={affRefName || 'username'}
+                      Your link will be: {siteOrigin}/?ref={affRefName || 'username'}
                     </span>
                   </div>
                 )}
@@ -372,11 +377,11 @@ export default function AffiliatePage() {
                           <input
                             type="text"
                             readOnly
-                            value={`http://localhost:3000/?ref=${affProfile?.username}`}
+                            value={`${siteOrigin}/?ref=${affProfile?.username}`}
                             className="flex-1 bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-xs font-mono text-slate-600 outline-none"
                           />
                           <button
-                            onClick={() => copyToClipboard(`http://localhost:3000/?ref=${affProfile?.username}`, 'link')}
+                            onClick={() => copyToClipboard(`${siteOrigin}/?ref=${affProfile?.username}`, 'link')}
                             className="bg-slate-100 hover:bg-slate-200 p-2.5 rounded-lg text-slate-700 transition"
                             title="Copy link"
                           >

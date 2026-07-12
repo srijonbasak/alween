@@ -7,6 +7,7 @@ import { Header } from '../components/Header';
 import { CheckoutDrawer } from '../components/CheckoutDrawer';
 import { VimeoVideo } from '../components/VimeoVideo';
 import { useCart } from '../context/CartContext';
+import { API_URL } from '../lib/api';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Compass, ShoppingCart, Award, Sparkles, ChevronRight, ChevronLeft, X, Heart, Eye, Database, Cpu } from 'lucide-react';
 
@@ -25,6 +26,22 @@ interface Perfume {
   topNotes: string;
   heartNotes: string;
   baseNotes: string;
+  type?: 'single' | 'combo';
+  perfumeCategory?: 'inspired' | 'original';
+  oilConcentration?: string;
+  price6ml?: number;
+  price10ml?: number;
+  price15ml?: number;
+  price30ml?: number;
+  price50ml?: number;
+  image6ml?: string;
+  image10ml?: string;
+  image15ml?: string;
+  image30ml?: string;
+  image50ml?: string;
+  originalBottleImage?: string;
+  packagingImage?: string;
+  isFeatured?: boolean;
 }
 
 // Statically hardcoded 14 premium perfumes requested for the hero carousel slider
@@ -253,6 +270,124 @@ export default function LandingPage() {
   const [activeDetailImageIdx, setActiveDetailImageIdx] = useState<number>(0);
   const [isLoading, setIsLoading] = useState(true);
 
+  const getDisplayPrice = (perfume: Perfume): string => {
+    if (perfume.type === 'combo') {
+      return `${perfume.pricePerMl} BDT`;
+    }
+    if (perfume.perfumeCategory === 'original') {
+      return `${perfume.pricePerMl} BDT/ml`;
+    }
+    const prices = [perfume.price6ml, perfume.price10ml, perfume.price15ml, perfume.price30ml, perfume.price50ml].filter((p): p is number => !!p && p > 0);
+    if (prices.length > 0) {
+      return `${Math.min(...prices)} BDT`;
+    }
+    return `${perfume.pricePerMl * 10} BDT`;
+  };
+
+  const getPriceLabel = (perfume: Perfume): string => {
+    if (perfume.type === 'combo') {
+      return 'PACKAGE PRICE';
+    }
+    if (perfume.perfumeCategory === 'original') {
+      return 'PRICE PER ML';
+    }
+    return 'STARTING PRICE';
+  };
+
+  const renderPerfumeCard = (perfume: Perfume) => {
+    const isCombo = perfume.type === 'combo';
+    return (
+      <motion.div
+        key={perfume._id}
+        initial={{ opacity: 0, y: 20 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true }}
+        className="group relative flex flex-col justify-between overflow-hidden rounded-2xl bg-white border border-slate-250 p-6 glass-hover"
+      >
+        <div>
+          <div className="relative aspect-square w-full overflow-hidden rounded-xl bg-slate-50 border border-slate-100 mb-6">
+            <img
+              src={perfume.imageUrls && perfume.imageUrls.length > 0 ? perfume.imageUrls[0] : 'https://images.unsplash.com/photo-1547887537-6158d64c35b3?auto=format&fit=crop&q=80&w=600'}
+              alt={perfume.name}
+              className="h-full w-full object-cover transition duration-700 group-hover:scale-105"
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-slate-900/40 via-transparent to-transparent opacity-60" />
+            
+            <div className="absolute top-3 left-3 flex flex-col gap-1.5">
+              <span className={`text-[8px] font-extrabold tracking-widest px-2 py-0.5 rounded shadow-sm uppercase font-mono ${
+                isCombo
+                  ? 'bg-blue-500 text-white'
+                  : 'bg-stone-850 text-white'
+              }`}>
+                {isCombo ? 'COMBO SCENT PACK' : (perfume.perfumeCategory === 'original' ? 'ORIGINAL' : 'INSPIRED')}
+              </span>
+              {perfume.isExcludedFromDiscounts && (
+                <span className="bg-red-500 text-white text-[8px] font-bold tracking-widest px-2 py-0.5 rounded shadow-sm font-mono">
+                  NO DISCOUNTS
+                </span>
+              )}
+            </div>
+
+            <span className="absolute bottom-3 left-3 bg-slate-900/95 text-white text-[9px] font-mono tracking-wider px-2 py-0.5 rounded">
+              {perfume.internalFormulaKey}
+            </span>
+          </div>
+
+          <h3 className="font-sans text-base font-bold text-slate-900 mb-2 group-hover:text-primary transition-colors uppercase">
+            {perfume.name}
+          </h3>
+          
+          <p className="text-slate-500 text-xs font-light line-clamp-3 leading-relaxed mb-6">
+            {perfume.description}
+          </p>
+
+          {!isCombo ? (
+            <div className="border-t border-slate-100 pt-4 mb-6 space-y-2">
+              <div className="flex justify-between text-[11px] text-slate-400 font-semibold tracking-wider font-mono">
+                <span>TOP NOTES:</span>
+                <span className="text-slate-650 font-normal truncate max-w-[180px]">{perfume.topNotes}</span>
+              </div>
+              <div className="flex justify-between text-[11px] text-slate-400 font-semibold tracking-wider font-mono">
+                <span>BASE:</span>
+                <span className="text-slate-650 font-normal truncate max-w-[180px]">{perfume.baseNotes}</span>
+              </div>
+            </div>
+          ) : (
+            <div className="border-t border-slate-100 pt-4 mb-6 flex items-center justify-between text-[11px] text-slate-400 font-semibold tracking-wider font-mono">
+              <span>PRODUCT TYPE:</span>
+              <span className="text-primary font-bold">COMBO BUNDLE</span>
+            </div>
+          )}
+        </div>
+
+        <div className="space-y-3 pt-2">
+          <div className="flex justify-between items-baseline">
+            <span className="text-[10px] font-bold tracking-wider text-slate-400 font-mono">
+              {getPriceLabel(perfume)}
+            </span>
+            <span className="text-primary font-bold text-base">
+              {getDisplayPrice(perfume)}
+            </span>
+          </div>
+          <div className="grid grid-cols-2 gap-3">
+            <button
+              onClick={() => openDetails(perfume)}
+              className="rounded-lg border border-slate-200 bg-slate-50 py-2.5 text-[10px] font-bold tracking-widest text-slate-650 hover:bg-slate-100 hover:text-slate-900 transition flex items-center justify-center gap-1.5"
+            >
+              <Eye className="h-3.5 w-3.5" /> DETAILS
+            </button>
+            <button
+              onClick={() => handleQuickBuy(perfume)}
+              className="rounded-lg bg-primary py-2.5 text-[10px] font-bold tracking-widest text-slate-900 hover:bg-primary/80 transition flex items-center justify-center gap-1.5 shadow-md shadow-primary/10"
+            >
+              <ShoppingCart className="h-3.5 w-3.5" /> QUICK BUY
+            </button>
+          </div>
+        </div>
+      </motion.div>
+    );
+  };
+
   // Screen layout detection for responsive carousel slider coordinates
   const [isMobile, setIsMobile] = useState(false);
   useEffect(() => {
@@ -292,6 +427,13 @@ export default function LandingPage() {
         if (Array.isArray(parsed) && parsed.length > 0) {
           const customDBItems = parsed.filter(p => !p.internalFormulaKey.startsWith('ST-'));
           setGridItems(customDBItems);
+          
+          // Also set carousel items from offline cache if featured items exist
+          const featuredDBItems = parsed.filter(p => p.isFeatured === true);
+          if (featuredDBItems.length > 0) {
+            setCarouselItems(featuredDBItems);
+          }
+
           setIsLoading(false);
         }
       } catch (e) {
@@ -299,19 +441,25 @@ export default function LandingPage() {
       }
     }
 
-    fetch('http://localhost:5000/api/perfumes')
+    fetch(`${API_URL}/api/perfumes`)
       .then(res => {
         if (!res.ok) throw new Error();
         return res.json();
       })
       .then((data: Perfume[]) => {
-        if (data && data.length > 0) {
-          // Do NOT override static carouselItems here - hero section is fixed & decoupled!
-          // Filter out ST- items from customDBItems so they don't appear in the grid
-          const customDBItems = data.filter(p => !p.internalFormulaKey.startsWith('ST-'));
-          setGridItems(customDBItems);
-          localStorage.setItem('alween_perfumes_cache', JSON.stringify(data));
+        // Update list and cache even if database has 0 items
+        const customDBItems = data.filter(p => !p.internalFormulaKey.startsWith('ST-'));
+        setGridItems(customDBItems);
+
+        // Update hero carousel if any database perfumes are explicitly flagged as featured
+        const featuredDBItems = data.filter(p => p.isFeatured === true);
+        if (featuredDBItems.length > 0) {
+          setCarouselItems(featuredDBItems);
+        } else {
+          setCarouselItems(STATIC_HERO_PERFUMES); // fallback
         }
+
+        localStorage.setItem('alween_perfumes_cache', JSON.stringify(data));
       })
       .catch(err => {
         console.log('Using local fallback static carousel. Database connection starting.');
@@ -466,6 +614,7 @@ export default function LandingPage() {
                       >
                         <div className="relative aspect-[3/4] w-full overflow-hidden rounded-xl bg-slate-50 border border-slate-100">
                           <img
+                            loading="lazy"
                             src={perfume.imageUrls[0]}
                             alt={perfume.name}
                             className="h-full w-full object-cover"
@@ -514,13 +663,13 @@ export default function LandingPage() {
                   href="#collection"
                   className="rounded bg-primary px-8 py-3.5 text-xs font-bold tracking-widest text-slate-900 transition hover:bg-primary/80 hover:scale-[1.01] flex items-center justify-center gap-1.5 shadow-md shadow-primary/10"
                 >
-                  EXPLORE CUSTOM SCENTS <ChevronRight className="h-4 w-4" />
+                  EXPLORE OUR COLLECTION <ChevronRight className="h-4 w-4" />
                 </a>
                 <Link
                   href="/combo-builder"
                   className="rounded border border-slate-250 bg-slate-50 px-8 py-3.5 text-xs font-bold tracking-widest text-slate-650 hover:bg-slate-100 hover:text-slate-900 transition"
                 >
-                  COMBO MATRIX BUILDER
+                  COMBO BUILDER
                 </Link>
               </div>
 
@@ -528,129 +677,55 @@ export default function LandingPage() {
           </div>
         </section>
 
-        {/* Custom registry grids list (Displays user manual uploads) */}
-        <section id="collection" className="py-20 sm:py-24 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
-            <span className="text-[10px] font-bold tracking-[0.3em] text-primary uppercase font-mono">SCENT DISCOVERY GRIDS</span>
-            <h2 className="font-sans text-3xl sm:text-4xl font-black tracking-tight text-slate-900 mt-2">
-              MANUALLY SYNTHESISED SCENTS
-            </h2>
-            <div className="mx-auto h-0.5 w-16 bg-primary/30 mt-4" />
+        {/* Collection Section split into Inspired and Original */}
+        <section id="collection" className="py-20 sm:py-24 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-20">
+          
+          {/* Inspired Creations */}
+          <div>
+            <div className="text-center mb-12">
+              <span className="text-[10px] font-bold tracking-[0.3em] text-primary uppercase font-mono">OUR INSPIRED SCENTS</span>
+              <h2 className="font-sans text-3xl sm:text-4xl font-black tracking-tight text-slate-900 mt-2">
+                INSPIRED CREATIONS
+              </h2>
+              <div className="mx-auto h-0.5 w-16 bg-primary/30 mt-4" />
+            </div>
+
+            {gridItems.filter(p => p.perfumeCategory !== 'original').length > 0 ? (
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                {gridItems.filter(p => p.perfumeCategory !== 'original').map((perfume) => renderPerfumeCard(perfume))}
+              </div>
+            ) : (
+              <div className="text-center text-slate-400 text-xs py-8 font-mono">No inspired fragrances available right now.</div>
+            )}
           </div>
 
-          {gridItems.length > 0 ? (
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-              {gridItems.map((perfume) => {
-                const isCombo = (perfume as any).type === 'combo';
-                return (
-                  <motion.div
-                    key={perfume._id}
-                    initial={{ opacity: 0, y: 20 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true }}
-                    className="group relative flex flex-col justify-between overflow-hidden rounded-2xl bg-white border border-slate-250 p-6 glass-hover"
-                  >
-                    <div>
-                      <div className="relative aspect-square w-full overflow-hidden rounded-xl bg-slate-50 border border-slate-100 mb-6">
-                        <img
-                          src={perfume.imageUrls && perfume.imageUrls.length > 0 ? perfume.imageUrls[0] : 'https://images.unsplash.com/photo-1547887537-6158d64c35b3?auto=format&fit=crop&q=80&w=600'}
-                          alt={perfume.name}
-                          className="h-full w-full object-cover transition duration-700 group-hover:scale-105"
-                        />
-                        <div className="absolute inset-0 bg-gradient-to-t from-slate-900/40 via-transparent to-transparent opacity-60" />
-                        
-                        <div className="absolute top-3 left-3 flex flex-col gap-1.5">
-                          <span className={`text-[8px] font-extrabold tracking-widest px-2 py-0.5 rounded shadow-sm uppercase font-mono ${
-                            isCombo
-                              ? 'bg-blue-500 text-white'
-                              : 'bg-stone-850 text-white'
-                          }`}>
-                            {isCombo ? 'COMBO SCENT PACK' : 'SINGLE FRAGRANCE'}
-                          </span>
-                          {perfume.isExcludedFromDiscounts && (
-                            <span className="bg-red-500 text-white text-[8px] font-bold tracking-widest px-2 py-0.5 rounded shadow-sm font-mono">
-                              NO DISCOUNTS
-                            </span>
-                          )}
-                        </div>
-
-                        <span className="absolute bottom-3 left-3 bg-slate-900/95 text-white text-[9px] font-mono tracking-wider px-2 py-0.5 rounded">
-                          {perfume.internalFormulaKey}
-                        </span>
-                      </div>
-
-                      <h3 className="font-sans text-base font-bold text-slate-900 mb-2 group-hover:text-primary transition-colors uppercase">
-                        {perfume.name}
-                      </h3>
-                      
-                      <p className="text-slate-500 text-xs font-light line-clamp-3 leading-relaxed mb-6">
-                        {perfume.description}
-                      </p>
-
-                      {!isCombo ? (
-                        <div className="border-t border-slate-100 pt-4 mb-6 space-y-2">
-                          <div className="flex justify-between text-[11px] text-slate-400 font-semibold tracking-wider font-mono">
-                            <span>TOP NOTES:</span>
-                            <span className="text-slate-650 font-normal truncate max-w-[180px]">{perfume.topNotes}</span>
-                          </div>
-                          <div className="flex justify-between text-[11px] text-slate-400 font-semibold tracking-wider font-mono">
-                            <span>BASE:</span>
-                            <span className="text-slate-650 font-normal truncate max-w-[180px]">{perfume.baseNotes}</span>
-                          </div>
-                        </div>
-                      ) : (
-                        <div className="border-t border-slate-100 pt-4 mb-6 flex items-center justify-between text-[11px] text-slate-400 font-semibold tracking-wider font-mono">
-                          <span>PRODUCT TYPE:</span>
-                          <span className="text-primary font-bold">PRE-COMPILED BUNDLE</span>
-                        </div>
-                      )}
-                    </div>
-
-                    <div className="space-y-3 pt-2">
-                      <div className="flex justify-between items-baseline">
-                        <span className="text-[10px] font-bold tracking-wider text-slate-400 font-mono">
-                          {isCombo ? 'COMBO PRICE' : 'CALCULATED PRICE'}
-                        </span>
-                        <span className="text-primary font-bold text-base">
-                          {perfume.pricePerMl} BDT
-                          {!isCombo && (
-                            <span className="text-[10px] font-light text-slate-400 font-mono">/ml</span>
-                          )}
-                        </span>
-                      </div>
-                      <div className="grid grid-cols-2 gap-3">
-                        <button
-                          onClick={() => openDetails(perfume)}
-                          className="rounded-lg border border-slate-200 bg-slate-50 py-2.5 text-[10px] font-bold tracking-widest text-slate-650 hover:bg-slate-100 hover:text-slate-900 transition flex items-center justify-center gap-1.5"
-                        >
-                          <Eye className="h-3.5 w-3.5" /> DETAILS
-                        </button>
-                        <button
-                          onClick={() => handleQuickBuy(perfume)}
-                          className="rounded-lg bg-primary py-2.5 text-[10px] font-bold tracking-widest text-slate-900 hover:bg-primary/80 transition flex items-center justify-center gap-1.5 shadow-md shadow-primary/10"
-                        >
-                          <ShoppingCart className="h-3.5 w-3.5" /> QUICK BUY
-                        </button>
-                      </div>
-                    </div>
-                  </motion.div>
-                );
-              })}
+          {/* Original Masterpieces */}
+          <div>
+            <div className="text-center mb-12">
+              <span className="text-[10px] font-bold tracking-[0.3em] text-primary uppercase font-mono">PREMIUM ORIGINAL RANGE</span>
+              <h2 className="font-sans text-3xl sm:text-4xl font-black tracking-tight text-slate-900 mt-2">
+                ORIGINAL MASTERPIECES
+              </h2>
+              <div className="mx-auto h-0.5 w-16 bg-primary/30 mt-4" />
             </div>
-          ) : (
-            /* Empty state for manual uploads */
+
+            {gridItems.filter(p => p.perfumeCategory === 'original').length > 0 ? (
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                {gridItems.filter(p => p.perfumeCategory === 'original').map((perfume) => renderPerfumeCard(perfume))}
+              </div>
+            ) : (
+              <div className="text-center text-slate-400 text-xs py-8 font-mono">No designer fragrances available right now.</div>
+            )}
+          </div>
+
+          {gridItems.length === 0 && (
+            /* Empty state */
             <div className="max-w-md mx-auto bg-slate-50 border border-slate-200 rounded-2xl p-8 flex flex-col items-center justify-center text-center shadow-sm">
               <Database className="h-10 w-10 text-slate-300 mb-4 animate-bounce" />
-              <h3 className="text-xs font-bold text-slate-800 uppercase tracking-wider font-mono">Custom Registry Empty</h3>
+              <h3 className="text-xs font-bold text-slate-800 uppercase tracking-wider font-mono">Collection Empty</h3>
               <p className="text-[11px] text-slate-500 max-w-xs mt-2 leading-relaxed">
-                You have not uploaded any custom fragrances yet. Go to your Admin Panel to list your own products.
+                Our custom decant collections are currently being updated. Please check back shortly.
               </p>
-              <Link 
-                href="/admin" 
-                className="mt-5 rounded-lg bg-primary px-5 py-2.5 text-[10px] font-bold tracking-widest text-slate-900 hover:bg-primary/80 transition shadow-sm"
-              >
-                GO TO LAB DASHBOARD
-              </Link>
             </div>
           )}
         </section>
@@ -658,13 +733,13 @@ export default function LandingPage() {
         {/* Video Presentation */}
         <section className="py-16 sm:py-20 bg-slate-50 border-t border-b border-slate-100">
           <div className="max-w-4xl mx-auto px-4 sm:px-6 text-center">
-            <span className="text-[9px] font-bold tracking-[0.3em] text-primary uppercase font-mono">ATMOSPHERIC FILM</span>
+            <span className="text-[9px] font-bold tracking-[0.3em] text-primary uppercase font-mono">BRAND VIDEO</span>
             <h2 className="font-sans text-2xl sm:text-3xl font-black tracking-tight text-slate-900 mt-2 mb-6">
-              AI SCENT MOLECULAR DISTILLATION
+              ALWEEN LUXURY PERFUMES BANGLADESH
             </h2>
             <VimeoVideo url="https://vimeo.com/76979871" />
-            <p className="text-slate-400 text-xs font-light tracking-wider mt-6 max-w-lg mx-auto leading-relaxed">
-              Vimeo production panels are lazy loaded. Zero initial network payload weights are generated on initial page access.
+            <p className="text-slate-500 text-xs font-light tracking-wide mt-6 max-w-lg mx-auto leading-relaxed">
+              Every scent decant is hand-poured with precision from authentic bottles to preserve the original fragrance projection.
             </p>
           </div>
         </section>
@@ -691,6 +766,7 @@ export default function LandingPage() {
                   <div>
                     <div className="relative aspect-square w-full overflow-hidden rounded bg-slate-50 border border-slate-100 shadow-sm">
                       <img
+                        loading="lazy"
                         src={selectedPerfume.imageUrls && selectedPerfume.imageUrls.length > 0
                           ? (selectedPerfume.imageUrls[activeDetailImageIdx] || selectedPerfume.imageUrls[0])
                           : 'https://images.unsplash.com/photo-1547887537-6158d64c35b3?auto=format&fit=crop&q=80&w=600'}
@@ -710,14 +786,14 @@ export default function LandingPage() {
                               activeDetailImageIdx === index ? 'border-primary' : 'border-slate-200'
                             }`}
                           >
-                            <img src={url} alt="" className="h-full w-full object-cover" />
+                            <img src={url} alt="" className="h-full w-full object-cover" loading="lazy" />
                           </button>
                         ))}
                       </div>
                     )}
 
                     <div className="mt-4 flex justify-between text-xs text-slate-400 font-mono">
-                      <span>FORMULA BATCH</span>
+                      <span>PRODUCT SKU</span>
                       <span className="font-bold text-slate-700">{selectedPerfume.internalFormulaKey}</span>
                     </div>
                   </div>
@@ -745,7 +821,7 @@ export default function LandingPage() {
                       {(selectedPerfume as any).type !== 'combo' ? (
                         <div className="mb-6">
                           <label className="block text-[10px] font-bold tracking-wider text-slate-400 uppercase font-mono mb-2">
-                            EXTRACT SIZE (ML)
+                            SELECT BOTTLE SIZE
                           </label>
                           <div className="grid grid-cols-5 gap-2">
                             {[6, 10, 15, 30, 50].map((size) => (
@@ -771,19 +847,19 @@ export default function LandingPage() {
                         <div className="space-y-3.5 border-t border-slate-100 pt-4 mb-6">
                           <div>
                             <span className="block text-[9px] font-bold tracking-widest text-primary uppercase font-mono">
-                              Top Notes (The First Impression)
+                              Top Notes
                             </span>
                             <span className="text-slate-650 text-xs font-light">{selectedPerfume.topNotes}</span>
                           </div>
                           <div>
                             <span className="block text-[9px] font-bold tracking-widest text-primary uppercase font-mono">
-                              Heart Notes (The Soul)
+                              Heart Notes
                             </span>
                             <span className="text-slate-650 text-xs font-light">{selectedPerfume.heartNotes}</span>
                           </div>
                           <div>
                             <span className="block text-[9px] font-bold tracking-widest text-primary uppercase font-mono">
-                              Base Notes (The Memory)
+                              Base Notes
                             </span>
                             <span className="text-slate-650 text-xs font-light">{selectedPerfume.baseNotes}</span>
                           </div>
@@ -794,7 +870,7 @@ export default function LandingPage() {
                             Combo Contents
                           </span>
                           <p className="text-slate-500 text-xs font-light leading-relaxed">
-                            This pre-compiled scent box features a premium collection of decants carefully stacked and selected by our lab specialists.
+                            This combo features a collection of decants carefully selected for you.
                           </p>
                         </div>
                       )}
@@ -803,7 +879,7 @@ export default function LandingPage() {
                     <div className="pt-4 border-t border-slate-100">
                       <div className="flex justify-between items-baseline mb-4 font-mono">
                         <span className="text-[10px] font-bold tracking-wider text-slate-400">
-                          {(selectedPerfume as any).type === 'combo' ? 'COMBO PRICE' : 'CALCULATED PRICE'}
+                          {(selectedPerfume as any).type === 'combo' ? 'PACKAGE PRICE' : 'TOTAL PRICE'}
                         </span>
                         <span className="text-primary font-bold text-lg">
                           {((selectedPerfume as any).type === 'combo'
@@ -816,7 +892,7 @@ export default function LandingPage() {
                         onClick={handleAddToBasketFromDetails}
                         className="w-full rounded bg-primary py-3 text-xs font-bold tracking-widest text-slate-900 hover:bg-primary/80 transition flex items-center justify-center gap-1.5 shadow-md shadow-primary/10"
                       >
-                        <ShoppingCart className="h-4 w-4" /> ADD TO SCENT BASKET
+                        <ShoppingCart className="h-4 w-4" /> ADD TO CART
                       </button>
                     </div>
                   </div>
@@ -827,8 +903,37 @@ export default function LandingPage() {
         </AnimatePresence>
       </main>
 
-      <footer className="bg-slate-50 border-t border-slate-100 py-8 text-center text-xs text-slate-400 font-mono">
-        <p>© 2026 ALWEEN AI SCENT LABS. ALL RIGHTS RESERVED.</p>
+      <footer className="bg-slate-900 text-slate-400 py-12 border-t border-slate-800 font-sans">
+        <div className="max-w-6xl mx-auto px-6 grid grid-cols-1 md:grid-cols-3 gap-8 text-left text-xs">
+          {/* Brand column */}
+          <div className="space-y-3">
+            <h4 className="text-white font-bold tracking-wider text-sm">ALWEEN LUXURY</h4>
+            <p className="text-slate-500 font-light leading-relaxed">
+              Premium designer perfume decants in Bangladesh. Experience authentic high-end fragrances in affordable bottle sizes.
+            </p>
+          </div>
+          {/* Support column */}
+          <div className="space-y-3">
+            <h4 className="text-white font-bold tracking-wider text-sm">CUSTOMER SUPPORT</h4>
+            <p className="text-slate-500 font-light">Email: support@alween.com</p>
+            <p className="text-slate-500 font-light">Helpline: +880 1322-309746</p>
+            <p className="text-slate-500 font-light">Dhaka, Bangladesh</p>
+          </div>
+          {/* Policies column */}
+          <div className="space-y-3">
+            <h4 className="text-white font-bold tracking-wider text-sm">LEGAL & POLICIES</h4>
+            <div className="flex flex-col gap-1.5 text-slate-500">
+              <button type="button" onClick={() => alert('PRIVACY POLICY\n\nYour privacy is important to us. We secure your personal credentials and order history. We do not sell or lease customer information to third parties.')} className="text-left hover:text-white transition">Privacy Policy</button>
+              <button type="button" onClick={() => alert('RETURN & REFUND POLICY\n\nDue to the hygiene nature of decanted fragrances, we do not accept returns. However, if your order arrives damaged, leaking, or incorrect, please email support@alween.com with photos within 24 hours of delivery for a replacement.')} className="text-left hover:text-white transition">Return & Refund Policy</button>
+              <button type="button" onClick={() => alert('SHIPPING & DELIVERY POLICY\n\nWe ship nationwide across Bangladesh. Delivery inside Dhaka takes 2-3 business days (60 BDT). Delivery outside Dhaka takes 3-5 business days (120 BDT). Free shipping applies on orders above 3000 BDT.')} className="text-left hover:text-white transition">Shipping Policy</button>
+              <button type="button" onClick={() => alert('TERMS OF SERVICE\n\nBy placing an order, you agree to our terms. Scent decants are hand-poured from original authentic bottles into sterile glass vials. We are an independent decanter and not affiliated with the brand owners.')} className="text-left hover:text-white transition">Terms of Service</button>
+            </div>
+          </div>
+        </div>
+        <div className="max-w-6xl mx-auto px-6 border-t border-slate-800 mt-8 pt-6 text-center text-[10px] text-slate-600 font-mono flex flex-col sm:flex-row justify-between gap-4">
+          <p>© 2026 ALWEEN LUXURY SCENTS. ALL RIGHTS RESERVED.</p>
+          <p>DECLARATION: Independent decanter, not affiliated with perfume design houses.</p>
+        </div>
       </footer>
 
       {/* Slide-out Checkout Drawer */}

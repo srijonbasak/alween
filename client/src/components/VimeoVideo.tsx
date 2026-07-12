@@ -46,7 +46,7 @@ export const VimeoVideo: React.FC<VimeoVideoProps> = ({ url }) => {
           {/* Aesthetic overlays */}
           <div className="absolute top-6 left-6 text-left">
             <span className="text-[9px] font-bold tracking-[0.3em] text-primary uppercase">VISUAL ATMOSPHERE</span>
-            <h4 className="font-serif text-lg font-semibold text-stone-200 mt-1">Lab Extractions & Distillation</h4>
+            <h4 className="font-serif text-lg font-semibold text-stone-200 mt-1">Fragrance Decanting & Presentation</h4>
           </div>
 
           <div className="flex h-14 w-14 items-center justify-center rounded-full bg-primary/10 text-primary border border-primary/40 group-hover:scale-105 group-hover:bg-primary group-hover:text-background transition-all duration-300">
@@ -54,8 +54,8 @@ export const VimeoVideo: React.FC<VimeoVideoProps> = ({ url }) => {
           </div>
 
           <div className="absolute bottom-6 left-6 right-6 flex items-center justify-between text-[10px] text-stone-400 tracking-wider">
-            <span>ALWEEN LABORATORY LAB TOUR</span>
-            <span>PLAY VIDEO (ZERO INITIAL PAYLOAD WEIGHT)</span>
+            <span>ALWEEN BRAND INTRO VIDEO</span>
+            <span>WATCH NOW</span>
           </div>
         </div>
       )}

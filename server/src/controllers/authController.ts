@@ -73,10 +73,16 @@ export const register = async (req: Request, res: Response): Promise<void> => {
 export const login = async (req: Request, res: Response): Promise<void> => {
   try {
     const { email, password } = req.body;
+    const loginInput = email?.trim();
 
-    const user = await User.findOne({ email });
+    const user = await User.findOne({
+      $or: [
+        { email: loginInput?.toLowerCase() },
+        { phone: loginInput }
+      ]
+    });
     if (!user) {
-      res.status(400).json({ error: 'Invalid email or password.' });
+      res.status(400).json({ error: 'Invalid email/phone or password.' });
       return;
     }
 
@@ -90,7 +96,7 @@ export const login = async (req: Request, res: Response): Promise<void> => {
     const token = jwt.sign(
       { userId: user._id, role: user.role },
       JWT_SECRET,
-      { expiresIn: '7d' }
+      { expiresIn: '90d' }
     );
 
     // Set signed HTTP-only cookie with cross-origin speed optimizations and strict properties
@@ -98,7 +104,7 @@ export const login = async (req: Request, res: Response): Promise<void> => {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
       sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
-      maxAge: 7 * 24 * 60 * 60 * 1000 // 7 days
+      maxAge: 90 * 24 * 60 * 60 * 1000 // 90 days
     });
 
     res.json({
@@ -200,5 +206,58 @@ export const toggleAffiliateStatus = async (req: any, res: Response): Promise<vo
     });
   } catch (error: any) {
     res.status(500).json({ error: 'Failed to enable affiliate status.', message: error.message });
+  }
+};
+
+export const createAdminUser = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const { name, email, phone, password } = req.body;
+
+    const existingUser = await User.findOne({ email });
+    if (existingUser) {
+      res.status(400).json({ error: 'User with this email already exists.' });
+      return;
+    }
+
+    const passwordHash = hashPassword(password);
+    const newAdmin = new User({
+      name,
+      email,
+      phone,
+      passwordHash,
+      role: 'admin',
+      isAffiliate: false
+    });
+
+    await newAdmin.save();
+    res.status(201).json({ message: 'Admin user created successfully.' });
+  } catch (error: any) {
+    res.status(500).json({ error: 'Failed to create admin user.', message: error.message });
+  }
+};
+
+export const changeAdminPassword = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const { currentPassword, newPassword } = req.body;
+    const userId = (req as any).user?.userId;
+
+    const user = await User.findById(userId);
+    if (!user) {
+      res.status(404).json({ error: 'User not found.' });
+      return;
+    }
+
+    const currentHash = hashPassword(currentPassword);
+    if (user.passwordHash !== currentHash) {
+      res.status(400).json({ error: 'Current password is incorrect.' });
+      return;
+    }
+
+    user.passwordHash = hashPassword(newPassword);
+    await user.save();
+
+    res.json({ message: 'Password updated successfully.' });
+  } catch (error: any) {
+    res.status(500).json({ error: 'Failed to change password.', message: error.message });
   }
 };

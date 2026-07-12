@@ -27,13 +27,14 @@ const User = mongoose.models.User || mongoose.model('User', UserSchema);
 async function run() {
   const args = process.argv.slice(2);
   if (args.length < 2) {
-    console.log('Usage: node create-admin.js <email> <password> [name]');
+    console.log('Usage: node create-admin.js <email> <password> [name] [phone]');
     process.exit(1);
   }
 
   const email = args[0].trim().toLowerCase();
   const password = args[1];
   const name = args[2] || 'Admin User';
+  const phone = args[3] || '';
 
   try {
     await mongoose.connect(MONGO_URI);
@@ -44,12 +45,14 @@ async function run() {
     if (existing) {
       existing.role = 'admin';
       existing.passwordHash = hashPassword(password);
+      if (phone) existing.phone = phone;
       await existing.save();
       console.log(`Successfully updated existing user ${email} to ADMIN role and updated password.`);
     } else {
       const newAdmin = new User({
         name,
         email,
+        phone,
         passwordHash: hashPassword(password),
         role: 'admin',
         pointsBalance: 0,

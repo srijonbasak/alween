@@ -1,6 +1,25 @@
 import { Request, Response } from 'express';
 import mongoose from 'mongoose';
+import fs from 'fs';
+import path from 'path';
 import Perfume from '../models/Perfume';
+
+const deleteLocalFileFromUrl = (url: string | undefined | null) => {
+  if (!url) return;
+  try {
+    if (url.includes('/uploads/')) {
+      const filename = url.split('/uploads/').pop();
+      if (filename) {
+        const filePath = path.join(__dirname, '../../public/uploads', filename);
+        if (fs.existsSync(filePath)) {
+          fs.unlinkSync(filePath);
+        }
+      }
+    }
+  } catch (err) {
+    console.error('Error deleting local upload file:', err);
+  }
+};
 
 export const getPerfumes = async (req: Request, res: Response): Promise<void> => {
   try {
@@ -42,20 +61,40 @@ export const createPerfume = async (req: Request, res: Response): Promise<void> 
       loss_margin_factor,
       pricePerMl,
       isExcludedFromDiscounts,
+      isFeatured,
       topNotes,
       heartNotes,
       baseNotes,
-      type
+      type,
+      perfumeCategory,
+      oilConcentration
     } = req.body;
 
     const files = req.files as Express.Multer.File[] | undefined;
     const imageUrls: string[] = [];
+    let image6ml = '';
+    let image10ml = '';
+    let image15ml = '';
+    let image30ml = '';
+    let image50ml = '';
+    let originalBottleImage = '';
+    let packagingImage = '';
 
     if (files && files.length > 0) {
       const host = req.get('host') || 'localhost:5000';
       const protocol = req.secure || req.headers['x-forwarded-proto'] === 'https' ? 'https' : 'http';
       files.forEach(file => {
-        imageUrls.push(`${protocol}://${host}/uploads/${file.filename}`);
+        const fileUrl = `${protocol}://${host}/uploads/${file.filename}`;
+        if (file.fieldname === 'image6ml') image6ml = fileUrl;
+        else if (file.fieldname === 'image10ml') image10ml = fileUrl;
+        else if (file.fieldname === 'image15ml') image15ml = fileUrl;
+        else if (file.fieldname === 'image30ml') image30ml = fileUrl;
+        else if (file.fieldname === 'image50ml') image50ml = fileUrl;
+        else if (file.fieldname === 'originalBottleImage') originalBottleImage = fileUrl;
+        else if (file.fieldname === 'packagingImage') packagingImage = fileUrl;
+        else {
+          imageUrls.push(fileUrl);
+        }
       });
     }
 
@@ -79,6 +118,7 @@ export const createPerfume = async (req: Request, res: Response): Promise<void> 
       loss_margin_factor: Number(loss_margin_factor || 0.03),
       pricePerMl: Number(pricePerMl || 1.0),
       isExcludedFromDiscounts: isExcludedFromDiscounts === 'true' || isExcludedFromDiscounts === true,
+      isFeatured: isFeatured === 'true' || isFeatured === true,
       topNotes: topNotes || '',
       heartNotes: heartNotes || '',
       baseNotes: baseNotes || '',
@@ -90,7 +130,16 @@ export const createPerfume = async (req: Request, res: Response): Promise<void> 
       price10ml: Number(req.body.price10ml || 0),
       price15ml: Number(req.body.price15ml || 0),
       price30ml: Number(req.body.price30ml || 0),
-      price50ml: Number(req.body.price50ml || 0)
+      price50ml: Number(req.body.price50ml || 0),
+      perfumeCategory: perfumeCategory || 'inspired',
+      oilConcentration: oilConcentration || '',
+      image6ml,
+      image10ml,
+      image15ml,
+      image30ml,
+      image50ml,
+      originalBottleImage,
+      packagingImage
     });
 
     await newPerfume.save();
@@ -127,6 +176,9 @@ export const updatePerfume = async (req: Request, res: Response): Promise<void> 
     if (updateData.isExcludedFromDiscounts !== undefined) {
       updateData.isExcludedFromDiscounts = updateData.isExcludedFromDiscounts === 'true' || updateData.isExcludedFromDiscounts === true;
     }
+    if (updateData.isFeatured !== undefined) {
+      updateData.isFeatured = updateData.isFeatured === 'true' || updateData.isFeatured === true;
+    }
 
     if (updateData.comboPerfumes !== undefined) {
       try {
@@ -135,6 +187,15 @@ export const updatePerfume = async (req: Request, res: Response): Promise<void> 
         updateData.comboPerfumes = Array.isArray(updateData.comboPerfumes) ? updateData.comboPerfumes : [updateData.comboPerfumes];
       }
     }
+
+    // Preserve existing single fields if not uploaded
+    updateData.image6ml = req.body.image6ml_existing || perfume.image6ml || '';
+    updateData.image10ml = req.body.image10ml_existing || perfume.image10ml || '';
+    updateData.image15ml = req.body.image15ml_existing || perfume.image15ml || '';
+    updateData.image30ml = req.body.image30ml_existing || perfume.image30ml || '';
+    updateData.image50ml = req.body.image50ml_existing || perfume.image50ml || '';
+    updateData.originalBottleImage = req.body.originalBottleImage_existing || perfume.originalBottleImage || '';
+    updateData.packagingImage = req.body.packagingImage_existing || perfume.packagingImage || '';
 
     // Append new images if uploaded, preserving selected existing images
     let existingUrls = perfume.imageUrls || [];
@@ -147,14 +208,42 @@ export const updatePerfume = async (req: Request, res: Response): Promise<void> 
     }
 
     const files = req.files as Express.Multer.File[] | undefined;
+    const newStandardUrls: string[] = [];
+
     if (files && files.length > 0) {
       const host = req.get('host') || 'localhost:5000';
       const protocol = req.secure || req.headers['x-forwarded-proto'] === 'https' ? 'https' : 'http';
-      const newUrls = files.map(file => `${protocol}://${host}/uploads/${file.filename}`);
-      updateData.imageUrls = [...existingUrls, ...newUrls];
+      files.forEach(file => {
+        const fileUrl = `${protocol}://${host}/uploads/${file.filename}`;
+        if (file.fieldname === 'image6ml') updateData.image6ml = fileUrl;
+        else if (file.fieldname === 'image10ml') updateData.image10ml = fileUrl;
+        else if (file.fieldname === 'image15ml') updateData.image15ml = fileUrl;
+        else if (file.fieldname === 'image30ml') updateData.image30ml = fileUrl;
+        else if (file.fieldname === 'image50ml') updateData.image50ml = fileUrl;
+        else if (file.fieldname === 'originalBottleImage') updateData.originalBottleImage = fileUrl;
+        else if (file.fieldname === 'packagingImage') updateData.packagingImage = fileUrl;
+        else {
+          newStandardUrls.push(fileUrl);
+        }
+      });
+      updateData.imageUrls = [...existingUrls, ...newStandardUrls];
     } else {
       updateData.imageUrls = existingUrls;
     }
+
+    // Compare images to clean up removed files from server uploads folder
+    const oldImages = perfume.imageUrls || [];
+    const newImages = updateData.imageUrls || [];
+    const removedImages = oldImages.filter(url => !newImages.includes(url));
+    removedImages.forEach(url => deleteLocalFileFromUrl(url));
+
+    if (perfume.image6ml && updateData.image6ml !== perfume.image6ml) deleteLocalFileFromUrl(perfume.image6ml);
+    if (perfume.image10ml && updateData.image10ml !== perfume.image10ml) deleteLocalFileFromUrl(perfume.image10ml);
+    if (perfume.image15ml && updateData.image15ml !== perfume.image15ml) deleteLocalFileFromUrl(perfume.image15ml);
+    if (perfume.image30ml && updateData.image30ml !== perfume.image30ml) deleteLocalFileFromUrl(perfume.image30ml);
+    if (perfume.image50ml && updateData.image50ml !== perfume.image50ml) deleteLocalFileFromUrl(perfume.image50ml);
+    if (perfume.originalBottleImage && updateData.originalBottleImage !== perfume.originalBottleImage) deleteLocalFileFromUrl(perfume.originalBottleImage);
+    if (perfume.packagingImage && updateData.packagingImage !== perfume.packagingImage) deleteLocalFileFromUrl(perfume.packagingImage);
 
     const updatedPerfume = await Perfume.findByIdAndUpdate(id, updateData, { new: true });
     res.json(updatedPerfume);
@@ -166,11 +255,23 @@ export const updatePerfume = async (req: Request, res: Response): Promise<void> 
 export const deletePerfume = async (req: Request, res: Response): Promise<void> => {
   try {
     const { id } = req.params;
-    const perfume = await Perfume.findByIdAndDelete(id);
+    const perfume = await Perfume.findById(id);
     if (!perfume) {
       res.status(404).json({ error: 'Perfume not found.' });
       return;
     }
+
+    // Delete all local images associated with this perfume
+    (perfume.imageUrls || []).forEach(url => deleteLocalFileFromUrl(url));
+    deleteLocalFileFromUrl(perfume.image6ml);
+    deleteLocalFileFromUrl(perfume.image10ml);
+    deleteLocalFileFromUrl(perfume.image15ml);
+    deleteLocalFileFromUrl(perfume.image30ml);
+    deleteLocalFileFromUrl(perfume.image50ml);
+    deleteLocalFileFromUrl(perfume.originalBottleImage);
+    deleteLocalFileFromUrl(perfume.packagingImage);
+
+    await Perfume.findByIdAndDelete(id);
     res.json({ message: 'Perfume deleted successfully.' });
   } catch (error: any) {
     res.status(500).json({ error: 'Failed to delete perfume.', message: error.message });

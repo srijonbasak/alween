@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { Header } from '../../../components/Header';
 import { CheckoutDrawer } from '../../../components/CheckoutDrawer';
 import { useCart } from '../../../context/CartContext';
+import { API_URL } from '../../../lib/api';
 import { motion } from 'framer-motion';
 import { ShoppingBag, Eye, X, ChevronLeft, ChevronRight, Package, Cpu, ArrowLeft, Loader2 } from 'lucide-react';
 
@@ -12,6 +13,12 @@ interface SinglePerfumeRef {
   _id: string;
   name: string;
   internalFormulaKey: string;
+  imageUrls?: string[];
+  image6ml?: string;
+  image10ml?: string;
+  image15ml?: string;
+  image30ml?: string;
+  image50ml?: string;
 }
 
 interface Combo {
@@ -55,7 +62,7 @@ export default function ComboProductDetailPage({ params }: { params: Promise<{ i
       }
     }
 
-    fetch(`http://localhost:5000/api/perfumes/${id}`)
+    fetch(`${API_URL}/api/perfumes/${id}`)
       .then(res => {
         if (!res.ok) throw new Error();
         return res.json();
@@ -91,6 +98,28 @@ export default function ComboProductDetailPage({ params }: { params: Promise<{ i
     );
   }
 
+  const getComboImages = (): string[] => {
+    if (!combo) return [];
+    const images = [...(combo.imageUrls || [])];
+    
+    if (combo.comboPerfumes) {
+      combo.comboPerfumes.forEach((perf: any) => {
+        const sizeKey = `image${combo.comboBottleSizeMl}ml` as keyof typeof perf;
+        const sizeImage = perf[sizeKey] as string | undefined;
+        if (sizeImage && sizeImage.trim() !== '') {
+          images.push(sizeImage);
+        } else if (perf.imageUrls && perf.imageUrls.length > 0) {
+          images.push(perf.imageUrls[0]);
+        }
+      });
+    }
+    
+    return images.length > 0 ? images : ['https://images.unsplash.com/photo-1547887537-6158d64c35b3?auto=format&fit=crop&q=80&w=600'];
+  };
+
+  const activeImages = getComboImages();
+  const mainImage = activeImages[activeImageIdx] || activeImages[0];
+
   const handleAddComboToCart = () => {
     addToCart({
       id: `${combo._id}-combo`,
@@ -124,18 +153,16 @@ export default function ComboProductDetailPage({ params }: { params: Promise<{ i
             <div className="lg:col-span-6 space-y-4">
               <div className="relative aspect-square w-full overflow-hidden rounded-2xl bg-slate-50 border border-slate-100 shadow-sm">
                 <img
-                  src={combo.imageUrls && combo.imageUrls.length > 0
-                    ? combo.imageUrls[activeImageIdx]
-                    : 'https://images.unsplash.com/photo-1547887537-6158d64c35b3?auto=format&fit=crop&q=80&w=600'}
+                  src={mainImage}
                   alt={combo.name}
                   className="h-full w-full object-cover"
                 />
               </div>
 
               {/* Thumbnails list */}
-              {combo.imageUrls && combo.imageUrls.length > 1 && (
+              {activeImages.length > 1 && (
                 <div className="flex gap-2 overflow-x-auto py-1">
-                  {combo.imageUrls.map((url, index) => (
+                  {activeImages.map((url, index) => (
                     <button
                       key={index}
                       onClick={() => setActiveImageIdx(index)}
@@ -223,7 +250,7 @@ export default function ComboProductDetailPage({ params }: { params: Promise<{ i
               <div className="pt-6 border-t border-slate-100 max-w-md">
                 <div className="flex justify-between items-baseline mb-4 font-mono">
                   <span className="text-[10px] font-bold tracking-wider text-slate-400">
-                    FLAT PACKAGE PRICE
+                    PACKAGE PRICE
                   </span>
                   <span className="text-primary font-bold text-2xl">
                     {combo.pricePerMl.toFixed(2)} BDT
@@ -234,7 +261,7 @@ export default function ComboProductDetailPage({ params }: { params: Promise<{ i
                   onClick={handleAddComboToCart}
                   className="w-full rounded-lg bg-primary py-3.5 text-xs font-bold tracking-widest text-slate-900 hover:bg-primary/80 transition flex items-center justify-center gap-2 shadow-md shadow-primary/10 hover:shadow-lg"
                 >
-                  <ShoppingBag className="h-4.5 w-4.5" /> ADD COMBO TO BASKET
+                  <ShoppingBag className="h-4.5 w-4.5" /> ADD COMBO TO CART
                 </button>
               </div>
 

@@ -23,6 +23,16 @@ export interface IPerfume extends Document {
   price15ml?: number;
   price30ml?: number;
   price50ml?: number;
+  perfumeCategory?: 'inspired' | 'original';
+  oilConcentration?: string;
+  image6ml?: string;
+  image10ml?: string;
+  image15ml?: string;
+  image30ml?: string;
+  image50ml?: string;
+  originalBottleImage?: string;
+  packagingImage?: string;
+  isFeatured?: boolean;
   createdAt: Date;
 }
 
@@ -49,6 +59,16 @@ const PerfumeSchema: Schema = new Schema({
   price15ml: { type: Number, default: 0 },
   price30ml: { type: Number, default: 0 },
   price50ml: { type: Number, default: 0 },
+  perfumeCategory: { type: String, enum: ['inspired', 'original'], default: 'inspired' },
+  oilConcentration: { type: String, default: '' },
+  image6ml: { type: String, default: '' },
+  image10ml: { type: String, default: '' },
+  image15ml: { type: String, default: '' },
+  image30ml: { type: String, default: '' },
+  image50ml: { type: String, default: '' },
+  originalBottleImage: { type: String, default: '' },
+  packagingImage: { type: String, default: '' },
+  isFeatured: { type: Boolean, default: false },
   createdAt: { type: Date, default: Date.now }
 });
 

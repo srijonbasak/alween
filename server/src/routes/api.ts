@@ -1,7 +1,7 @@
 import { Router } from 'express';
-import { register, login, logout, getCurrentUser, toggleAffiliateStatus } from '../controllers/authController';
+import { register, login, logout, getCurrentUser, toggleAffiliateStatus, createAdminUser, changeAdminPassword } from '../controllers/authController';
 import { getPerfumes, getPerfumeById, createPerfume, updatePerfume, deletePerfume } from '../controllers/perfumeController';
-import { createOrder, getOrderDetails, getOrders, updateOrderStatus } from '../controllers/orderController';
+import { createOrder, getOrderDetails, getOrders, updateOrderStatus, updateOrderFields, deleteOrder } from '../controllers/orderController';
 import { getAffiliateProfile, getAffiliatesList } from '../controllers/affiliateController';
 import { getConfig, updateConfig } from '../controllers/configController';
 import { getCoupons, createCoupon, deleteCoupon, validateCoupon } from '../controllers/couponController';
@@ -19,14 +19,16 @@ router.post('/auth/login', login);
 router.post('/auth/logout', logout);
 router.get('/auth/me', authenticate, getCurrentUser);
 router.post('/auth/toggle-affiliate', authenticate, toggleAffiliateStatus);
+router.post('/admin/create-admin', authenticate, authorizeAdmin, createAdminUser);
+router.post('/admin/change-password', authenticate, authorizeAdmin, changeAdminPassword);
 
 // ==========================================
 // PERFUME CRUD ROUTES
 // ==========================================
 router.get('/perfumes', getPerfumes);
 router.get('/perfumes/:id', getPerfumeById);
-router.post('/perfumes', authenticate, authorizeAdmin, upload.array('images', 5), createPerfume);
-router.put('/perfumes/:id', authenticate, authorizeAdmin, upload.array('images', 5), updatePerfume);
+router.post('/perfumes', authenticate, authorizeAdmin, upload.any(), createPerfume);
+router.put('/perfumes/:id', authenticate, authorizeAdmin, upload.any(), updatePerfume);
 router.delete('/perfumes/:id', authenticate, authorizeAdmin, deletePerfume);
 
 // ==========================================
@@ -37,6 +39,8 @@ router.post('/orders', verifyTurnstile, createOrder);
 router.get('/orders', authenticate, authorizeAdmin, getOrders);
 router.get('/orders/:orderId', getOrderDetails);
 router.put('/orders/:orderId/status', authenticate, authorizeAdmin, updateOrderStatus);
+router.put('/orders/:orderId', authenticate, authorizeAdmin, updateOrderFields);
+router.delete('/orders/:orderId', authenticate, authorizeAdmin, deleteOrder);
 
 // ==========================================
 // COUPON MANAGEMENT ROUTES

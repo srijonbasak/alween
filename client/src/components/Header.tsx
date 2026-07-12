@@ -22,7 +22,7 @@ export const Header: React.FC = () => {
             SCENT COMBOS
           </Link>
           <Link href="/combo-builder" className="transition hover:text-primary">
-            COMBO MATRIX
+            CUSTOM COMBOS
           </Link>
         </nav>
 
@@ -45,14 +45,7 @@ export const Header: React.FC = () => {
             <span className="ml-1.5 hidden text-[10px] font-bold tracking-wider lg:inline">PARTNER</span>
           </Link>
 
-          <Link
-            href="/admin"
-            className="flex items-center text-slate-500 transition hover:text-primary"
-            title="Admin Suite"
-          >
-            <Settings className="h-4.5 w-4.5" />
-            <span className="ml-1.5 hidden text-[10px] font-bold tracking-wider lg:inline">LAB PANEL</span>
-          </Link>
+
 
           {/* Cart Icon trigger */}
           <button

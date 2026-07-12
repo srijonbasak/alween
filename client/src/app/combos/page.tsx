@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation';
 import { Header } from '../../components/Header';
 import { CheckoutDrawer } from '../../components/CheckoutDrawer';
 import { useCart } from '../../context/CartContext';
+import { API_URL } from '../../lib/api';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ShoppingBag, Eye, X, ChevronLeft, ChevronRight, Package, Cpu, ArrowLeft, Database } from 'lucide-react';
 
@@ -55,7 +56,7 @@ export default function CombosPage() {
       }
     }
 
-    fetch('http://localhost:5000/api/perfumes')
+    fetch(`${API_URL}/api/perfumes`)
       .then((res) => {
         if (!res.ok) throw new Error();
         return res.json();

@@ -4,6 +4,7 @@ import dotenv from 'dotenv';
 import Perfume from './models/Perfume';
 import User from './models/User';
 import SystemConfig from './models/SystemConfig';
+import Coupon from './models/Coupon';
 
 dotenv.config();
 
@@ -250,7 +251,21 @@ const seedDatabase = async () => {
     await admin.save();
     console.log('Admin user seeded: admin@alweenfragrance.com / admin123');
 
-    console.log('Database configurations and Admin seeded successfully!');
+    // 5. Seed default discount coupon ALWEEN20
+    await Coupon.deleteMany({});
+    const coupon = new Coupon({
+      code: 'ALWEEN20',
+      discountType: 'percentage',
+      discountValue: 20,
+      maxDiscountCap: 1000,
+      expiresAt: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000), // Valid for 1 year
+      appliesTo: 'all',
+      selectedProductIds: []
+    });
+    await coupon.save();
+    console.log('Coupon seeded: ALWEEN20 (20% off)');
+
+    console.log('Database configurations, Admin and Coupons seeded successfully!');
     process.exit(0);
   } catch (error) {
     console.error('Seeding process encountered an error:', error);
