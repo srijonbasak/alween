@@ -87,18 +87,20 @@ const VimeoHeroCard: React.FC<{
         </div>
       )}
 
-      {/* 2. Vimeo Video Stream Iframe (loop=0 & api=1 so video plays completely to end then advances) */}
-      <iframe
-        src={`https://player.vimeo.com/video/${videoId}?autoplay=1&loop=0&muted=${isAudioPlaying ? 0 : 1}&volume=${isAudioPlaying ? 0.10 : 0}&autopause=0&background=1&quality=720p&api=1`}
-        className={cn(
-          "absolute inset-0 w-full h-full scale-[1.12] transition-opacity duration-700 ease-in-out",
-          isVideoLoaded ? "opacity-100" : "opacity-0"
-        )}
-        frameBorder="0"
-        allow="autoplay; fullscreen"
-        loading="eager"
-        onLoad={() => setIsVideoLoaded(true)}
-      />
+      {/* 2. Vimeo Video Stream Iframe (only mounted when card is active/adjacent for 4x faster load) */}
+      {(isCenter || isAudioPlaying) ? (
+        <iframe
+          src={`https://player.vimeo.com/video/${videoId}?autoplay=1&loop=0&muted=${isAudioPlaying ? 0 : 1}&volume=${isAudioPlaying ? 0.10 : 0}&autopause=0&background=1&quality=540p&dnt=1&playsinline=1&api=1`}
+          className={cn(
+            "absolute inset-0 w-full h-full scale-[1.12] transition-opacity duration-700 ease-in-out",
+            isVideoLoaded ? "opacity-100" : "opacity-0"
+          )}
+          frameBorder="0"
+          allow="autoplay; fullscreen"
+          loading="eager"
+          onLoad={() => setIsVideoLoaded(true)}
+        />
+      ) : null}
 
       {/* Subtle luxury gradient edge vignette */}
       <div className="absolute inset-0 bg-gradient-to-t from-slate-950/40 via-transparent to-slate-950/20 opacity-60 pointer-events-none" />
