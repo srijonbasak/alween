@@ -1,34 +1,28 @@
 import { Request, Response, NextFunction } from 'express';
 
-const sanitizeObject = (obj: any): any => {
-  if (obj === null || obj === undefined) return obj;
-  if (typeof obj === 'string') {
-    return obj
-      .trim()
-      .replace(/</g, '&lt;')
-      .replace(/>/g, '&gt;')
-      .replace(/"/g, '&quot;')
-      .replace(/'/g, '&#x27;')
-      .replace(/\//g, '&#x2F;');
+const sanitizeValue = (val: any): any => {
+  if (typeof val === 'string') {
+    // Strip malicious script tags while preserving URLs, slashes, quotes, and password characters
+    return val.replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '').trim();
   }
-  if (Array.isArray(obj)) {
-    return obj.map(sanitizeObject);
+  if (Array.isArray(val)) {
+    return val.map(sanitizeValue);
   }
-  if (typeof obj === 'object') {
-    const sanitized: any = {};
-    for (const key in obj) {
-      if (Object.prototype.hasOwnProperty.call(obj, key)) {
-        sanitized[key] = sanitizeObject(obj[key]);
+  if (val && typeof val === 'object') {
+    const cleaned: any = {};
+    for (const key in val) {
+      if (Object.prototype.hasOwnProperty.call(val, key)) {
+        cleaned[key] = sanitizeValue(val[key]);
       }
     }
-    return sanitized;
+    return cleaned;
   }
-  return obj;
+  return val;
 };
 
 export const sanitizeMiddleware = (req: Request, res: Response, next: NextFunction) => {
-  if (req.body) req.body = sanitizeObject(req.body);
-  if (req.query) req.query = sanitizeObject(req.query);
-  if (req.params) req.params = sanitizeObject(req.params);
+  if (req.body) req.body = sanitizeValue(req.body);
+  if (req.query) req.query = sanitizeValue(req.query);
+  if (req.params) req.params = sanitizeValue(req.params);
   next();
 };

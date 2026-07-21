@@ -24,11 +24,15 @@ interface CartContextType {
   cart: CartItem[];
   addToCart: (item: Omit<CartItem, 'quantity'> & { quantity?: number }) => void;
   removeFromCart: (id: string) => void;
+  updateQuantity: (id: string, newQuantity: number) => void;
   clearCart: () => void;
   isDrawerOpen: boolean;
   setIsDrawerOpen: (isOpen: boolean) => void;
+  isSearchOpen: boolean;
+  setIsSearchOpen: (isOpen: boolean) => void;
   affiliateRef: string | null;
   setAffiliateRef: (ref: string | null) => void;
+  isMounted: boolean;
 }
 
 const CartContext = createContext<CartContextType | undefined>(undefined);
@@ -36,10 +40,13 @@ const CartContext = createContext<CartContextType | undefined>(undefined);
 export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [cart, setCart] = useState<CartItem[]>([]);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+  const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [affiliateRef, setAffiliateRef] = useState<string | null>(null);
+  const [isMounted, setIsMounted] = useState(false);
 
   // Initialize cart from localStorage on client mount
   useEffect(() => {
+    setIsMounted(true);
     const savedCart = localStorage.getItem('alween_cart');
     if (savedCart) {
       try {
@@ -85,6 +92,14 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
     saveCart(cart.filter(item => item.id !== id));
   };
 
+  const updateQuantity = (id: string, newQuantity: number) => {
+    if (newQuantity <= 0) {
+      removeFromCart(id);
+    } else {
+      saveCart(cart.map(item => item.id === id ? { ...item, quantity: newQuantity } : item));
+    }
+  };
+
   const clearCart = () => {
     saveCart([]);
     localStorage.removeItem('alween_cart');
@@ -95,11 +110,15 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
       cart,
       addToCart,
       removeFromCart,
+      updateQuantity,
       clearCart,
       isDrawerOpen,
       setIsDrawerOpen,
+      isSearchOpen,
+      setIsSearchOpen,
       affiliateRef,
-      setAffiliateRef
+      setAffiliateRef,
+      isMounted
     }}>
       {children}
     </CartContext.Provider>

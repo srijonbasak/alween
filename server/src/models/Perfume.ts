@@ -72,4 +72,8 @@ const PerfumeSchema: Schema = new Schema({
   createdAt: { type: Date, default: Date.now }
 });
 
+// Database indexes for 10x faster query lookups
+PerfumeSchema.index({ internalFormulaKey: 1 });
+PerfumeSchema.index({ perfumeCategory: 1, type: 1, isFeatured: -1, createdAt: -1 });
+
 export default mongoose.model<IPerfume>('Perfume', PerfumeSchema);

@@ -1,11 +1,14 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import { Button as NeonButton } from '../components/ui/neon-button';
+import { Footerdemo } from '../components/ui/footer-section';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { Header } from '../components/Header';
 import { CheckoutDrawer } from '../components/CheckoutDrawer';
 import { VimeoVideo } from '../components/VimeoVideo';
+import { HeroSection } from '../components/ui/feature-carousel';
 import { useCart } from '../context/CartContext';
 import { API_URL } from '../lib/api';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -52,6 +55,7 @@ const STATIC_HERO_PERFUMES: Perfume[] = [
     internalFormulaKey: 'ST-WANTED',
     description: 'An addictive and fiery fragrance blending warm cardamom, sweet toffee, and rich amberwood.',
     imageUrls: ['https://images.unsplash.com/photo-1547887537-6158d64c35b3?auto=format&fit=crop&q=80&w=600'],
+    vimeoUrl: 'https://vimeo.com/1211733718',
     current_volume_ml: 10000,
     reorder_threshold_ml: 1000,
     loss_margin_factor: 0.03,
@@ -67,6 +71,7 @@ const STATIC_HERO_PERFUMES: Perfume[] = [
     internalFormulaKey: 'ST-AVENTUS',
     description: 'The iconic representation of strength and success. Features notes of pineapple, blackcurrant, and dry birch.',
     imageUrls: ['/images/creed_aventus.png'],
+    vimeoUrl: 'https://vimeo.com/1211735131',
     current_volume_ml: 10000,
     reorder_threshold_ml: 1000,
     loss_margin_factor: 0.03,
@@ -269,6 +274,7 @@ export default function LandingPage() {
   const [selectedSize, setSelectedSize] = useState<number>(10);
   const [activeDetailImageIdx, setActiveDetailImageIdx] = useState<number>(0);
   const [isLoading, setIsLoading] = useState(true);
+  const [heroVimeoUrls, setHeroVimeoUrls] = useState<string[]>(['https://vimeo.com/1211733718', 'https://vimeo.com/1211735131', 'https://vimeo.com/1211748766']);
 
   const getDisplayPrice = (perfume: Perfume): string => {
     if (perfume.type === 'combo') {
@@ -299,10 +305,12 @@ export default function LandingPage() {
     return (
       <motion.div
         key={perfume._id}
-        initial={{ opacity: 0, y: 20 }}
+        initial={{ opacity: 0, y: 25 }}
         whileInView={{ opacity: 1, y: 0 }}
+        whileHover={{ y: -8, scale: 1.015 }}
+        transition={{ type: "spring", stiffness: 350, damping: 24 }}
         viewport={{ once: true }}
-        className="group relative flex flex-col justify-between overflow-hidden rounded-2xl bg-white border border-slate-250 p-6 glass-hover"
+        className="group relative flex flex-col justify-between overflow-hidden rounded-2xl bg-white border border-stone-200/80 p-6 shadow-md hover:shadow-2xl hover:border-amber-300/60 transition-all duration-300"
       >
         <div>
           <div className="relative aspect-square w-full overflow-hidden rounded-xl bg-slate-50 border border-slate-100 mb-6">
@@ -314,26 +322,26 @@ export default function LandingPage() {
             <div className="absolute inset-0 bg-gradient-to-t from-slate-900/40 via-transparent to-transparent opacity-60" />
             
             <div className="absolute top-3 left-3 flex flex-col gap-1.5">
-              <span className={`text-[8px] font-extrabold tracking-widest px-2 py-0.5 rounded shadow-sm uppercase font-mono ${
+              <span className={`text-[8px] font-extrabold tracking-widest px-2 py-0.5 rounded shadow-sm uppercase font-sans ${
                 isCombo
-                  ? 'bg-blue-500 text-white'
+                  ? 'bg-stone-900 text-white'
                   : 'bg-stone-850 text-white'
               }`}>
                 {isCombo ? 'COMBO SCENT PACK' : (perfume.perfumeCategory === 'original' ? 'ORIGINAL' : 'INSPIRED')}
               </span>
               {perfume.isExcludedFromDiscounts && (
-                <span className="bg-red-500 text-white text-[8px] font-bold tracking-widest px-2 py-0.5 rounded shadow-sm font-mono">
+                <span className="bg-red-500 text-white text-[8px] font-bold tracking-widest px-2 py-0.5 rounded shadow-sm font-sans">
                   NO DISCOUNTS
                 </span>
               )}
             </div>
 
-            <span className="absolute bottom-3 left-3 bg-slate-900/95 text-white text-[9px] font-mono tracking-wider px-2 py-0.5 rounded">
+            <span className="absolute bottom-3 left-3 bg-slate-900/95 text-white text-[9px] font-sans tracking-widest px-2 py-0.5 rounded">
               {perfume.internalFormulaKey}
             </span>
           </div>
 
-          <h3 className="font-sans text-base font-bold text-slate-900 mb-2 group-hover:text-primary transition-colors uppercase">
+          <h3 className="font-sans text-base font-bold text-slate-900 mb-2 group-hover:text-amber-600 transition-colors uppercase">
             {perfume.name}
           </h3>
           
@@ -343,17 +351,17 @@ export default function LandingPage() {
 
           {!isCombo ? (
             <div className="border-t border-slate-100 pt-4 mb-6 space-y-2">
-              <div className="flex justify-between text-[11px] text-slate-400 font-semibold tracking-wider font-mono">
+              <div className="flex justify-between text-[11px] text-slate-400 font-semibold tracking-widest font-sans">
                 <span>TOP NOTES:</span>
-                <span className="text-slate-650 font-normal truncate max-w-[180px]">{perfume.topNotes}</span>
+                <span className="text-stone-600 font-normal truncate max-w-[180px]">{perfume.topNotes}</span>
               </div>
-              <div className="flex justify-between text-[11px] text-slate-400 font-semibold tracking-wider font-mono">
+              <div className="flex justify-between text-[11px] text-slate-400 font-semibold tracking-widest font-sans">
                 <span>BASE:</span>
-                <span className="text-slate-650 font-normal truncate max-w-[180px]">{perfume.baseNotes}</span>
+                <span className="text-stone-600 font-normal truncate max-w-[180px]">{perfume.baseNotes}</span>
               </div>
             </div>
           ) : (
-            <div className="border-t border-slate-100 pt-4 mb-6 flex items-center justify-between text-[11px] text-slate-400 font-semibold tracking-wider font-mono">
+            <div className="border-t border-slate-100 pt-4 mb-6 flex items-center justify-between text-[11px] text-slate-400 font-semibold tracking-widest font-sans">
               <span>PRODUCT TYPE:</span>
               <span className="text-primary font-bold">COMBO BUNDLE</span>
             </div>
@@ -362,7 +370,7 @@ export default function LandingPage() {
 
         <div className="space-y-3 pt-2">
           <div className="flex justify-between items-baseline">
-            <span className="text-[10px] font-bold tracking-wider text-slate-400 font-mono">
+            <span className="text-[10px] font-bold tracking-widest text-slate-400 font-sans">
               {getPriceLabel(perfume)}
             </span>
             <span className="text-primary font-bold text-base">
@@ -370,52 +378,41 @@ export default function LandingPage() {
             </span>
           </div>
           <div className="grid grid-cols-2 gap-3">
-            <button
+            <motion.button
+              whileHover={{ scale: 1.03 }}
+              whileTap={{ scale: 0.96 }}
               onClick={() => openDetails(perfume)}
-              className="rounded-lg border border-slate-200 bg-slate-50 py-2.5 text-[10px] font-bold tracking-widest text-slate-650 hover:bg-slate-100 hover:text-slate-900 transition flex items-center justify-center gap-1.5"
+              className="rounded-lg border border-stone-200 bg-slate-50 py-2.5 text-[10px] font-bold tracking-widest text-stone-600 hover:bg-slate-100 hover:text-stone-900 transition flex items-center justify-center gap-1.5 cursor-pointer"
             >
               <Eye className="h-3.5 w-3.5" /> DETAILS
-            </button>
-            <button
+            </motion.button>
+            <motion.button
+              whileHover={{ scale: 1.03 }}
+              whileTap={{ scale: 0.96 }}
               onClick={() => handleQuickBuy(perfume)}
-              className="rounded-lg bg-primary py-2.5 text-[10px] font-bold tracking-widest text-slate-900 hover:bg-primary/80 transition flex items-center justify-center gap-1.5 shadow-md shadow-primary/10"
+              className="rounded-lg bg-stone-900 py-2.5 text-[10px] font-bold tracking-widest text-white hover:bg-stone-800 transition flex items-center justify-center gap-1.5 shadow-md shadow-stone-900/10 cursor-pointer"
             >
               <ShoppingCart className="h-3.5 w-3.5" /> QUICK BUY
-            </button>
+            </motion.button>
           </div>
         </div>
       </motion.div>
     );
   };
 
-  // Screen layout detection for responsive carousel slider coordinates
-  const [isMobile, setIsMobile] = useState(false);
+
+
+  // Fetch independent hero videos from configuration on mount
   useEffect(() => {
-    const handleResize = () => setIsMobile(window.innerWidth < 768);
-    handleResize();
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
+    fetch(`${API_URL}/api/config`)
+      .then(res => res.json())
+      .then(config => {
+        if (config && Array.isArray(config.heroVimeoUrls) && config.heroVimeoUrls.length > 0) {
+          setHeroVimeoUrls(config.heroVimeoUrls);
+        }
+      })
+      .catch(err => console.error('Failed fetching config:', err));
   }, []);
-
-  // Carousel slide pointer
-  const [activeSlide, setActiveSlide] = useState<number>(0);
-
-  const nextSlide = () => {
-    setActiveSlide((prev) => (prev + 1) % carouselItems.length);
-  };
-
-  const prevSlide = () => {
-    setActiveSlide((prev) => (prev - 1 + carouselItems.length) % carouselItems.length);
-  };
-
-  // Auto-slide effect
-  useEffect(() => {
-    // ponytail: auto-slide carousel every 5 seconds, resets on manual interaction (activeSlide changes)
-    const interval = setInterval(() => {
-      setActiveSlide((prev) => (prev + 1) % carouselItems.length);
-    }, 5000);
-    return () => clearInterval(interval);
-  }, [activeSlide, carouselItems.length]);
 
   // Fetch perfumes from server and map to respective UI slots
   useEffect(() => {
@@ -431,7 +428,14 @@ export default function LandingPage() {
           // Also set carousel items from offline cache if featured items exist
           const featuredDBItems = parsed.filter(p => p.isFeatured === true);
           if (featuredDBItems.length > 0) {
-            setCarouselItems(featuredDBItems);
+            let items = featuredDBItems;
+            if (items.length < 8) {
+              const staticPool = STATIC_HERO_PERFUMES.filter(
+                sp => !items.some(item => item.internalFormulaKey === sp.internalFormulaKey)
+              );
+              items = [...items, ...staticPool].slice(0, 10);
+            }
+            setCarouselItems(items);
           }
 
           setIsLoading(false);
@@ -454,7 +458,14 @@ export default function LandingPage() {
         // Update hero carousel if any database perfumes are explicitly flagged as featured
         const featuredDBItems = data.filter(p => p.isFeatured === true);
         if (featuredDBItems.length > 0) {
-          setCarouselItems(featuredDBItems);
+          let items = featuredDBItems;
+          if (items.length < 8) {
+            const staticPool = STATIC_HERO_PERFUMES.filter(
+              sp => !items.some(item => item.internalFormulaKey === sp.internalFormulaKey)
+            );
+            items = [...items, ...staticPool].slice(0, 10);
+          }
+          setCarouselItems(items);
         } else {
           setCarouselItems(STATIC_HERO_PERFUMES); // fallback
         }
@@ -514,168 +525,46 @@ export default function LandingPage() {
       <Header />
 
       <main className="flex-1 bg-white text-slate-900">
-        {/* AI Hero Banner */}
-        <section className="relative overflow-hidden pt-8 pb-10 sm:pt-12 sm:pb-16 border-b border-slate-100 bg-[radial-gradient(ellipse_80%_80%_at_50%_-20%,rgba(197,168,128,0.06),rgba(255,255,255,0))]">
-          <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 text-center">
-            <motion.div
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8 }}
-              className="flex flex-col items-center"
-            >
+        {/* 3D Vimeo Feature Carousel Hero Banner */}
+        <HeroSection
+          title={
+            <div className="flex flex-col items-center">
               <img src="/logo_top.png" alt="Alween" className="h-10 sm:h-12 mb-3 sm:mb-4 object-contain" />
-              
-              <h1 className="font-sans text-3xl sm:text-5xl font-black tracking-tight text-slate-900 max-w-4xl leading-[1.1] mb-4">
+              <span className="whitespace-nowrap tracking-tight font-black uppercase text-[4.2vw] sm:text-4xl md:text-5xl lg:text-6xl block mt-2">
                 Discover Luxury Fragrances
-              </h1>
-              
-              {/* 3D Coverflow Carousel (White & Gold Slider displaying the 14 premium items statically) */}
-              <div className="relative flex w-full items-center justify-center py-4 px-4 max-w-4xl mx-auto h-[330px] sm:h-[400px]">
-                <button
-                  type="button"
-                  onClick={prevSlide}
-                  className="absolute left-2 sm:left-10 z-20 flex h-10 w-10 items-center justify-center rounded-full border border-slate-200 bg-white/95 text-slate-500 hover:text-primary hover:border-primary shadow-sm transition focus:outline-none"
-                >
-                  <ChevronLeft className="h-5 w-5" />
-                </button>
-
-                <div className="relative flex items-center justify-center w-full h-full overflow-hidden">
-                  {carouselItems.map((perfume, idx) => {
-                    const len = carouselItems.length;
-                    const diff = (idx - activeSlide + len) % len;
-
-                    let isCenter = diff === 0;
-                    let isLeft = diff === len - 1;
-                    let isRight = diff === 1;
-
-                    // Compute 3D translation positions
-                    let scale = 0.75;
-                    let rotateY = 0;
-                    let zIndex = 10;
-                    let x = 0;
-                    let opacity = 0;
-                    let filter = 'blur(4px)';
-
-                    if (isCenter) {
-                      scale = 1.0;
-                      rotateY = 0;
-                      zIndex = 30;
-                      x = 0;
-                      opacity = 1.0;
-                      filter = 'blur(0px)';
-                    } else if (isLeft) {
-                      scale = isMobile ? 0.7 : 0.8;
-                      rotateY = isMobile ? 10 : 20;
-                      zIndex = 20;
-                      x = isMobile ? -65 : -210;
-                      opacity = isMobile ? 0.35 : 0.55;
-                      filter = isMobile ? 'blur(3px)' : 'blur(2px)';
-                    } else if (isRight) {
-                      scale = isMobile ? 0.7 : 0.8;
-                      rotateY = isMobile ? -10 : -20;
-                      zIndex = 20;
-                      x = isMobile ? 65 : 210;
-                      opacity = isMobile ? 0.35 : 0.55;
-                      filter = isMobile ? 'blur(3px)' : 'blur(2px)';
-                    } else if (diff === len - 2) {
-                      // Pre-render outer left
-                      scale = 0.65;
-                      zIndex = 5;
-                      x = isMobile ? -120 : -320;
-                      opacity = isMobile ? 0 : 0.15;
-                    } else if (diff === 2) {
-                      // Pre-render outer right
-                      scale = 0.65;
-                      zIndex = 5;
-                      x = isMobile ? 120 : 320;
-                      opacity = isMobile ? 0 : 0.15;
-                    }
-
-                    return (
-                      <motion.div
-                        key={perfume.internalFormulaKey}
-                        animate={{
-                          scale,
-                          x,
-                          rotateY,
-                          opacity,
-                          filter,
-                        }}
-                        transition={{ type: 'spring', stiffness: 300, damping: 30 }}
-                        style={{ zIndex, perspective: 1200, pointerEvents: opacity > 0 ? 'auto' : 'none' }}
-                        className="absolute w-[200px] h-[290px] sm:w-[240px] sm:h-[350px] shrink-0 rounded-2xl bg-white border border-slate-200/80 shadow-xl flex flex-col justify-between p-3 sm:p-4 cursor-pointer"
-                        onClick={() => {
-                          if (isCenter) {
-                            openDetails(perfume);
-                          } else {
-                            setActiveSlide(idx);
-                          }
-                        }}
-                      >
-                        <div className="relative aspect-[3/4] w-full overflow-hidden rounded-xl bg-slate-50 border border-slate-100">
-                          <img
-                            loading="lazy"
-                            src={perfume.imageUrls[0]}
-                            alt={perfume.name}
-                            className="h-full w-full object-cover"
-                          />
-                          <div className="absolute inset-0 bg-gradient-to-t from-slate-900/60 via-transparent to-transparent" />
-                          <span className="absolute bottom-2 left-2 bg-slate-900/90 text-white text-[8px] font-mono tracking-wider px-1.5 py-0.5 rounded">
-                            {perfume.internalFormulaKey}
-                          </span>
-                        </div>
-
-                        <div className="mt-3 flex-1 flex flex-col justify-between text-left">
-                          <div>
-                            <h4 className="font-sans text-xs font-bold text-slate-800 uppercase tracking-wider line-clamp-1">
-                              {perfume.name}
-                            </h4>
-                            <p className="text-[9px] text-slate-400 font-light truncate mt-0.5 font-mono">
-                              {perfume.topNotes} • {perfume.baseNotes}
-                            </p>
-                          </div>
-                          
-                          <div className="mt-2 pt-2 border-t border-slate-100 flex justify-between items-baseline">
-                            <span className="text-[8px] text-slate-400 font-bold uppercase font-mono">Price</span>
-                            <span className="text-primary font-bold text-xs">{perfume.pricePerMl} BDT/ml</span>
-                          </div>
-                        </div>
-                      </motion.div>
-                    );
-                  })}
-                </div>
-
-                <button
-                  type="button"
-                  onClick={nextSlide}
-                  className="absolute right-2 sm:right-10 z-20 flex h-10 w-10 items-center justify-center rounded-full border border-slate-200 bg-white/95 text-slate-500 hover:text-primary hover:border-primary shadow-sm transition focus:outline-none"
-                >
-                  <ChevronRight className="h-5 w-5" />
-                </button>
-              </div>
-
-              <p className="text-slate-500 text-xs sm:text-sm font-light tracking-wide max-w-2xl mt-4 sm:mt-6 mb-4 sm:mb-6 leading-relaxed font-serif">
-                Curated premium perfumes for discerning tastes.
-              </p>
-              
-              <div className="flex flex-col sm:flex-row gap-4 w-full justify-center max-w-xs sm:max-w-none">
-                <a
-                  href="#collection"
-                  className="rounded bg-primary px-8 py-3.5 text-xs font-bold tracking-widest text-slate-900 transition hover:bg-primary/80 hover:scale-[1.01] flex items-center justify-center gap-1.5 shadow-md shadow-primary/10"
-                >
-                  EXPLORE OUR COLLECTION <ChevronRight className="h-4 w-4" />
-                </a>
-                <Link
-                  href="/combo-builder"
-                  className="rounded border border-slate-250 bg-slate-50 px-8 py-3.5 text-xs font-bold tracking-widest text-slate-650 hover:bg-slate-100 hover:text-slate-900 transition"
-                >
-                  COMBO BUILDER
-                </Link>
-              </div>
-
-            </motion.div>
+              </span>
+            </div>
+          }
+          subtitle="Curated premium perfumes for discerning tastes"
+          images={heroVimeoUrls.map((url, idx) => ({
+            src: 'https://images.unsplash.com/photo-1547887537-6158d64c35b3?auto=format&fit=crop&q=80&w=600',
+            alt: `Video ${idx + 1}`,
+            vimeoUrl: url,
+            title: `Atmosphere ${idx + 1}`,
+            description: 'Vimeo Video Walkthrough',
+            id: `video-${idx}`
+          }))}
+          onItemClick={() => {}}
+        >
+          <div className="flex flex-col sm:flex-row gap-3 justify-center items-center max-w-md mx-auto mt-6 w-full">
+            <NeonButton
+              variant="solid"
+              size="lg"
+              className="w-full sm:w-auto text-[10px] tracking-widest font-bold font-sans flex items-center justify-center gap-1.5 shadow-md shadow-stone-900/10 animate-pulse-subtle"
+              onClick={() => document.getElementById('collection')?.scrollIntoView({ behavior: 'smooth' })}
+            >
+              EXPLORE OUR COLLECTION <ChevronRight className="h-4 w-4" />
+            </NeonButton>
+            <NeonButton
+              variant="default"
+              size="lg"
+              className="w-full sm:w-auto text-[10px] tracking-widest font-bold font-sans text-stone-600 hover:text-stone-900 border border-slate-200 bg-white"
+              onClick={() => router.push('/combo-builder')}
+            >
+              COMBO BUILDER
+            </NeonButton>
           </div>
-        </section>
+        </HeroSection>
 
         {/* Collection Section split into Inspired and Original */}
         <section id="collection" className="py-20 sm:py-24 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-20">
@@ -683,7 +572,7 @@ export default function LandingPage() {
           {/* Inspired Creations */}
           <div>
             <div className="text-center mb-12">
-              <span className="text-[10px] font-bold tracking-[0.3em] text-primary uppercase font-mono">OUR INSPIRED SCENTS</span>
+              <span className="text-[10px] font-bold tracking-[0.3em] text-primary uppercase font-sans">OUR INSPIRED SCENTS</span>
               <h2 className="font-sans text-3xl sm:text-4xl font-black tracking-tight text-slate-900 mt-2">
                 INSPIRED CREATIONS
               </h2>
@@ -702,7 +591,7 @@ export default function LandingPage() {
           {/* Original Masterpieces */}
           <div>
             <div className="text-center mb-12">
-              <span className="text-[10px] font-bold tracking-[0.3em] text-primary uppercase font-mono">PREMIUM ORIGINAL RANGE</span>
+              <span className="text-[10px] font-bold tracking-[0.3em] text-primary uppercase font-sans">PREMIUM ORIGINAL RANGE</span>
               <h2 className="font-sans text-3xl sm:text-4xl font-black tracking-tight text-slate-900 mt-2">
                 ORIGINAL MASTERPIECES
               </h2>
@@ -714,7 +603,7 @@ export default function LandingPage() {
                 {gridItems.filter(p => p.perfumeCategory === 'original').map((perfume) => renderPerfumeCard(perfume))}
               </div>
             ) : (
-              <div className="text-center text-slate-400 text-xs py-8 font-mono">No designer fragrances available right now.</div>
+              <div className="text-center text-slate-400 text-xs py-8 font-sans tracking-widest">No designer fragrances available right now.</div>
             )}
           </div>
 
@@ -722,7 +611,7 @@ export default function LandingPage() {
             /* Empty state */
             <div className="max-w-md mx-auto bg-slate-50 border border-slate-200 rounded-2xl p-8 flex flex-col items-center justify-center text-center shadow-sm">
               <Database className="h-10 w-10 text-slate-300 mb-4 animate-bounce" />
-              <h3 className="text-xs font-bold text-slate-800 uppercase tracking-wider font-mono">Collection Empty</h3>
+              <h3 className="text-xs font-bold text-slate-800 uppercase tracking-widest font-sans">Collection Empty</h3>
               <p className="text-[11px] text-slate-500 max-w-xs mt-2 leading-relaxed">
                 Our custom decant collections are currently being updated. Please check back shortly.
               </p>
@@ -730,19 +619,6 @@ export default function LandingPage() {
           )}
         </section>
 
-        {/* Video Presentation */}
-        <section className="py-16 sm:py-20 bg-slate-50 border-t border-b border-slate-100">
-          <div className="max-w-4xl mx-auto px-4 sm:px-6 text-center">
-            <span className="text-[9px] font-bold tracking-[0.3em] text-primary uppercase font-mono">BRAND VIDEO</span>
-            <h2 className="font-sans text-2xl sm:text-3xl font-black tracking-tight text-slate-900 mt-2 mb-6">
-              ALWEEN LUXURY PERFUMES BANGLADESH
-            </h2>
-            <VimeoVideo url="https://vimeo.com/76979871" />
-            <p className="text-slate-500 text-xs font-light tracking-wide mt-6 max-w-lg mx-auto leading-relaxed">
-              Every scent decant is hand-poured with precision from authentic bottles to preserve the original fragrance projection.
-            </p>
-          </div>
-        </section>
 
         {/* Perfume Details Modal Panel */}
         <AnimatePresence>
@@ -792,7 +668,7 @@ export default function LandingPage() {
                       </div>
                     )}
 
-                    <div className="mt-4 flex justify-between text-xs text-slate-400 font-mono">
+                    <div className="mt-4 flex justify-between text-xs text-slate-400 font-sans tracking-widest">
                       <span>PRODUCT SKU</span>
                       <span className="font-bold text-slate-700">{selectedPerfume.internalFormulaKey}</span>
                     </div>
@@ -804,7 +680,7 @@ export default function LandingPage() {
                       <div className="flex items-center gap-2 mb-2">
                         <span className={`text-[7px] font-extrabold tracking-widest px-2 py-0.5 rounded border uppercase ${
                           (selectedPerfume as any).type === 'combo'
-                            ? 'bg-blue-50 border-blue-200 text-blue-700'
+                            ? 'bg-stone-900 border-stone-800 text-white'
                             : 'bg-stone-50 border-stone-200 text-stone-700'
                         }`}>
                           {(selectedPerfume as any).type === 'combo' ? 'Combo Box' : 'Single Fragrance'}
@@ -813,55 +689,79 @@ export default function LandingPage() {
                       <h3 className="font-sans text-xl font-bold text-slate-900 mb-2 uppercase tracking-wide">
                         {selectedPerfume.name}
                       </h3>
-                      <p className="text-slate-500 text-xs font-light leading-relaxed mb-6">
+
+                      {/* --- 1. PRICE, SIZE SELECTOR & CTA BUTTON ABOVE DESCRIPTION --- */}
+                      <div className="bg-stone-50 border border-stone-200/80 p-4 rounded-xl mb-5 space-y-4">
+                        <div className="flex justify-between items-baseline font-mono">
+                          <span className="text-[10px] font-bold tracking-wider text-slate-400 uppercase">
+                            {(selectedPerfume as any).type === 'combo' ? 'PACKAGE PRICE' : 'PRICE'}
+                          </span>
+                          <span className="text-primary font-black text-xl">
+                            {((selectedPerfume as any).type === 'combo'
+                              ? selectedPerfume.pricePerMl
+                              : selectedPerfume.pricePerMl * selectedSize
+                            ).toFixed(2)} BDT
+                          </span>
+                        </div>
+
+                        {/* SIZE SELECTION MATRIX (Only for single perfumes) */}
+                        {(selectedPerfume as any).type !== 'combo' ? (
+                          <div>
+                            <label className="block text-[10px] font-bold tracking-widest text-slate-400 uppercase font-sans mb-2">
+                              SELECT BOTTLE SIZE
+                            </label>
+                            <div className="grid grid-cols-5 gap-2">
+                              {[6, 10, 15, 30, 50].map((size) => (
+                                <button
+                                  key={size}
+                                  type="button"
+                                  onClick={() => setSelectedSize(size)}
+                                  className={`rounded-lg py-2 text-center text-xs font-bold transition focus:outline-none cursor-pointer ${
+                                    selectedSize === size
+                                      ? 'bg-stone-900 text-white shadow-md'
+                                      : 'bg-white border border-stone-200 text-stone-600 hover:bg-slate-100'
+                                  }`}
+                                >
+                                  {size}ml
+                                </button>
+                              ))}
+                            </div>
+                          </div>
+                        ) : null}
+
+                        <button
+                          onClick={handleAddToBasketFromDetails}
+                          className="w-full rounded-xl bg-stone-900 py-3 text-xs font-bold tracking-widest text-white hover:bg-stone-800 transition flex items-center justify-center gap-1.5 shadow-md cursor-pointer"
+                        >
+                          <ShoppingCart className="h-4 w-4" /> ADD TO CART
+                        </button>
+                      </div>
+
+                      {/* --- 2. DESCRIPTION & OLFACTORY NOTES (PLACED AFTER PRICE & CTAs) --- */}
+                      <p className="text-slate-600 text-xs font-light leading-relaxed mb-5">
                         {selectedPerfume.description}
                       </p>
-
-                      {/* SIZE SELECTION MATRIX (Only for single perfumes) */}
-                      {(selectedPerfume as any).type !== 'combo' ? (
-                        <div className="mb-6">
-                          <label className="block text-[10px] font-bold tracking-wider text-slate-400 uppercase font-mono mb-2">
-                            SELECT BOTTLE SIZE
-                          </label>
-                          <div className="grid grid-cols-5 gap-2">
-                            {[6, 10, 15, 30, 50].map((size) => (
-                              <button
-                                key={size}
-                                type="button"
-                                onClick={() => setSelectedSize(size)}
-                                className={`rounded py-2 text-center text-xs font-bold transition focus:outline-none ${
-                                  selectedSize === size
-                                    ? 'bg-primary text-slate-900 shadow-md shadow-primary/10'
-                                    : 'bg-slate-50 border border-slate-200 text-slate-650 hover:bg-slate-100 hover:border-slate-350'
-                                }`}
-                              >
-                                {size}ml
-                              </button>
-                            ))}
-                          </div>
-                        </div>
-                      ) : null}
 
                       {/* MICRO-COPY OLFACTORY FIELDS (Only for single perfumes) */}
                       {(selectedPerfume as any).type !== 'combo' ? (
                         <div className="space-y-3.5 border-t border-slate-100 pt-4 mb-6">
                           <div>
-                            <span className="block text-[9px] font-bold tracking-widest text-primary uppercase font-mono">
+                            <span className="block text-[9px] font-bold tracking-widest text-primary uppercase font-sans">
                               Top Notes
                             </span>
-                            <span className="text-slate-650 text-xs font-light">{selectedPerfume.topNotes}</span>
+                            <span className="text-stone-600 text-xs font-light">{selectedPerfume.topNotes}</span>
                           </div>
                           <div>
-                            <span className="block text-[9px] font-bold tracking-widest text-primary uppercase font-mono">
+                            <span className="block text-[9px] font-bold tracking-widest text-primary uppercase font-sans">
                               Heart Notes
                             </span>
-                            <span className="text-slate-650 text-xs font-light">{selectedPerfume.heartNotes}</span>
+                            <span className="text-stone-600 text-xs font-light">{selectedPerfume.heartNotes}</span>
                           </div>
                           <div>
-                            <span className="block text-[9px] font-bold tracking-widest text-primary uppercase font-mono">
+                            <span className="block text-[9px] font-bold tracking-widest text-primary uppercase font-sans">
                               Base Notes
                             </span>
-                            <span className="text-slate-650 text-xs font-light">{selectedPerfume.baseNotes}</span>
+                            <span className="text-stone-600 text-xs font-light">{selectedPerfume.baseNotes}</span>
                           </div>
                         </div>
                       ) : (
@@ -875,26 +775,6 @@ export default function LandingPage() {
                         </div>
                       )}
                     </div>
-
-                    <div className="pt-4 border-t border-slate-100">
-                      <div className="flex justify-between items-baseline mb-4 font-mono">
-                        <span className="text-[10px] font-bold tracking-wider text-slate-400">
-                          {(selectedPerfume as any).type === 'combo' ? 'PACKAGE PRICE' : 'TOTAL PRICE'}
-                        </span>
-                        <span className="text-primary font-bold text-lg">
-                          {((selectedPerfume as any).type === 'combo'
-                            ? selectedPerfume.pricePerMl
-                            : selectedPerfume.pricePerMl * selectedSize
-                          ).toFixed(2)} BDT
-                        </span>
-                      </div>
-                      <button
-                        onClick={handleAddToBasketFromDetails}
-                        className="w-full rounded bg-primary py-3 text-xs font-bold tracking-widest text-slate-900 hover:bg-primary/80 transition flex items-center justify-center gap-1.5 shadow-md shadow-primary/10"
-                      >
-                        <ShoppingCart className="h-4 w-4" /> ADD TO CART
-                      </button>
-                    </div>
                   </div>
                 </div>
               </motion.div>
@@ -903,38 +783,7 @@ export default function LandingPage() {
         </AnimatePresence>
       </main>
 
-      <footer className="bg-slate-900 text-slate-400 py-12 border-t border-slate-800 font-sans">
-        <div className="max-w-6xl mx-auto px-6 grid grid-cols-1 md:grid-cols-3 gap-8 text-left text-xs">
-          {/* Brand column */}
-          <div className="space-y-3">
-            <h4 className="text-white font-bold tracking-wider text-sm">ALWEEN LUXURY</h4>
-            <p className="text-slate-500 font-light leading-relaxed">
-              Premium designer perfume decants in Bangladesh. Experience authentic high-end fragrances in affordable bottle sizes.
-            </p>
-          </div>
-          {/* Support column */}
-          <div className="space-y-3">
-            <h4 className="text-white font-bold tracking-wider text-sm">CUSTOMER SUPPORT</h4>
-            <p className="text-slate-500 font-light">Email: support@alween.com</p>
-            <p className="text-slate-500 font-light">Helpline: +880 1322-309746</p>
-            <p className="text-slate-500 font-light">Dhaka, Bangladesh</p>
-          </div>
-          {/* Policies column */}
-          <div className="space-y-3">
-            <h4 className="text-white font-bold tracking-wider text-sm">LEGAL & POLICIES</h4>
-            <div className="flex flex-col gap-1.5 text-slate-500">
-              <button type="button" onClick={() => alert('PRIVACY POLICY\n\nYour privacy is important to us. We secure your personal credentials and order history. We do not sell or lease customer information to third parties.')} className="text-left hover:text-white transition">Privacy Policy</button>
-              <button type="button" onClick={() => alert('RETURN & REFUND POLICY\n\nDue to the hygiene nature of decanted fragrances, we do not accept returns. However, if your order arrives damaged, leaking, or incorrect, please email support@alween.com with photos within 24 hours of delivery for a replacement.')} className="text-left hover:text-white transition">Return & Refund Policy</button>
-              <button type="button" onClick={() => alert('SHIPPING & DELIVERY POLICY\n\nWe ship nationwide across Bangladesh. Delivery inside Dhaka takes 2-3 business days (60 BDT). Delivery outside Dhaka takes 3-5 business days (120 BDT). Free shipping applies on orders above 3000 BDT.')} className="text-left hover:text-white transition">Shipping Policy</button>
-              <button type="button" onClick={() => alert('TERMS OF SERVICE\n\nBy placing an order, you agree to our terms. Scent decants are hand-poured from original authentic bottles into sterile glass vials. We are an independent decanter and not affiliated with the brand owners.')} className="text-left hover:text-white transition">Terms of Service</button>
-            </div>
-          </div>
-        </div>
-        <div className="max-w-6xl mx-auto px-6 border-t border-slate-800 mt-8 pt-6 text-center text-[10px] text-slate-600 font-mono flex flex-col sm:flex-row justify-between gap-4">
-          <p>© 2026 ALWEEN LUXURY SCENTS. ALL RIGHTS RESERVED.</p>
-          <p>DECLARATION: Independent decanter, not affiliated with perfume design houses.</p>
-        </div>
-      </footer>
+      <Footerdemo />
 
       {/* Slide-out Checkout Drawer */}
       <CheckoutDrawer />

@@ -386,9 +386,6 @@ export const createOrder = async (req: Request, res: Response): Promise<void> =>
 
     // Commit Transaction
     await session.commitTransaction();
-    session.endSession();
-
-    // Dynamic invoice generation will be streamed directly on request, no disk storage.
 
     res.status(201).json({
       message: 'Order created successfully.',
@@ -396,9 +393,10 @@ export const createOrder = async (req: Request, res: Response): Promise<void> =>
       selfReferralDetected
     });
   } catch (error: any) {
-    await session.abortTransaction();
-    session.endSession();
+    try { await session.abortTransaction(); } catch (e) {}
     res.status(500).json({ error: 'Order processing failed.', message: error.message });
+  } finally {
+    session.endSession();
   }
 };
 

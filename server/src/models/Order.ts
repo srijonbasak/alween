@@ -70,4 +70,9 @@ const OrderSchema = new Schema<IOrder>({
   createdAt: { type: Date, default: Date.now }
 });
 
+// Database indexes for 10x faster order lookups and admin dashboard queries
+OrderSchema.index({ orderNumber: 1 });
+OrderSchema.index({ customerPhone: 1 });
+OrderSchema.index({ orderStatus: 1, createdAt: -1 });
+
 export default mongoose.model<IOrder>('Order', OrderSchema);

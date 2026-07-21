@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
+import { Footerdemo } from '../../components/ui/footer-section';
 import { useRouter } from 'next/navigation';
 import { Header } from '../../components/Header';
 import { CheckoutDrawer } from '../../components/CheckoutDrawer';
@@ -260,7 +261,7 @@ export default function CombosPage() {
                 <div className="flex flex-col justify-between text-left">
                   <div>
                     <div className="flex items-center gap-2 mb-2">
-                      <span className="bg-blue-50 border border-blue-200 text-blue-700 text-[8px] font-extrabold tracking-widest px-2 py-0.5 rounded font-mono uppercase">
+                      <span className="bg-stone-50 border border-stone-200 text-stone-700 text-[8px] font-extrabold tracking-widest px-2 py-0.5 rounded font-sans uppercase">
                         {selectedCombo.comboBottleCount} Bottle Combo ({selectedCombo.comboBottleSizeMl}ml each)
                       </span>
                     </div>
@@ -310,6 +311,7 @@ export default function CombosPage() {
         )}
       </AnimatePresence>
 
+      <Footerdemo />
       <CheckoutDrawer />
     </div>
   );

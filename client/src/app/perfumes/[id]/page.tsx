@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { Header } from '../../../components/Header';
+import { Footerdemo } from '../../../components/ui/footer-section';
 import { CheckoutDrawer } from '../../../components/CheckoutDrawer';
 import { useCart } from '../../../context/CartContext';
 import { VimeoVideo } from '../../../components/VimeoVideo';
@@ -174,6 +175,10 @@ export default function PerfumeProductPage({ params }: { params: Promise<{ id: s
       internalFormulaKey: perfume.internalFormulaKey,
       isExcludedFromDiscounts: perfume.isExcludedFromDiscounts
     });
+  };
+
+  const handleBuyNow = () => {
+    handleAddToBasket();
     setIsDrawerOpen(true);
   };
 
@@ -181,21 +186,26 @@ export default function PerfumeProductPage({ params }: { params: Promise<{ id: s
     <div className="flex flex-col min-h-screen bg-white text-slate-900">
       <Header />
 
-      <main className="flex-1 py-12 bg-white">
+      <main className="flex-1 py-6 sm:py-10 bg-white">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           
           {/* Back Navigation Link */}
-          <div className="mb-8">
+          <div className="mb-4">
             <Link href="/" className="text-[10px] font-bold tracking-widest text-slate-400 hover:text-slate-900 transition flex items-center gap-1.5 uppercase font-mono">
               <ArrowLeft className="h-3.5 w-3.5" /> Back to Collections
             </Link>
           </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-start">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-start">
             
             {/* Left Column: Image Gallery Viewer */}
-            <div className="lg:col-span-6 space-y-4">
+            <div className="lg:col-span-6 space-y-3">
               <div className="relative aspect-square w-full overflow-hidden rounded-2xl bg-slate-50 border border-slate-100 shadow-sm">
+                {/* Category Overlay Badge on Image */}
+                <div className="absolute top-3 left-3 z-10 bg-white/90 backdrop-blur-md border border-stone-200/80 px-2.5 py-1 rounded-lg text-[9px] font-black tracking-widest text-stone-900 shadow-sm font-sans uppercase">
+                  {perfume.perfumeCategory === 'original' ? 'Original Bottle' : 'Inspired Scent'}
+                </div>
+
                 <img
                   src={mainImage}
                   alt={perfume.name}
@@ -210,7 +220,7 @@ export default function PerfumeProductPage({ params }: { params: Promise<{ id: s
                     <button
                       key={index}
                       onClick={() => setActiveImageIdx(index)}
-                      className={`h-14 w-14 rounded-lg overflow-hidden border-2 shrink-0 transition ${
+                      className={`h-12 w-12 rounded-lg overflow-hidden border-2 shrink-0 transition ${
                         activeImageIdx === index ? 'border-primary' : 'border-slate-200 hover:border-slate-350'
                       }`}
                     >
@@ -221,47 +231,31 @@ export default function PerfumeProductPage({ params }: { params: Promise<{ id: s
               )}
             </div>
 
-            {/* Right Column: Scent Specifications Form */}
-            <div className="lg:col-span-6 flex flex-col justify-between text-left space-y-6">
+            {/* Right Column: Scent Specifications & Purchase Interface */}
+            <div className="lg:col-span-6 flex flex-col justify-between text-left space-y-4">
               <div>
-                <div className="flex items-center gap-2 mb-3">
-                  <span className="bg-stone-50 border border-stone-200 text-stone-700 text-[8px] font-extrabold tracking-widest px-2 py-0.5 rounded font-mono uppercase">
-                    {perfume.perfumeCategory === 'original' ? 'Original Bottle' : 'Inspired Scent'}
-                  </span>
-                  {perfume.perfumeCategory !== 'original' && perfume.oilConcentration && (
-                    <span className="bg-[#FAF8F5] border border-[#EAE5DB] text-slate-700 text-[8px] font-bold tracking-widest px-2 py-0.5 rounded font-mono uppercase">
-                      Concentration: {perfume.oilConcentration}
-                    </span>
-                  )}
-                  {perfume.isExcludedFromDiscounts && (
-                    <span className="bg-red-50 border border-red-150 text-red-650 text-[8px] font-bold tracking-widest px-2 py-0.5 rounded font-mono uppercase">
-                      No Discounts
-                    </span>
-                  )}
-                </div>
-
-                <h1 className="font-sans text-3xl sm:text-4xl font-black tracking-tight text-slate-900 uppercase">
+                <h1 className="font-sans text-2xl sm:text-4xl font-black tracking-tight text-slate-900 uppercase">
                   {perfume.name}
                 </h1>
                 
-                <div className="text-[10px] text-slate-400 font-mono tracking-widest mt-1.5 mb-6 uppercase flex justify-between max-w-[200px]">
+                <div className="text-[10px] text-slate-400 font-mono tracking-widest mt-1 mb-4 uppercase flex justify-between max-w-[200px]">
                   <span>Product SKU:</span>
                   <span className="font-bold text-slate-800">{perfume.internalFormulaKey}</span>
                 </div>
 
-                <div className="border-t border-slate-100 pt-6 space-y-6">
-                  <div>
-                    <h3 className="text-[10px] font-bold tracking-wider text-slate-400 uppercase font-mono mb-2">
-                      Olfactory Description
-                    </h3>
-                    <p className="text-slate-600 text-xs sm:text-sm font-light leading-relaxed">
-                      {perfume.description}
-                    </p>
+                {/* --- 1. COMPACT PRICE, BOTTLE SIZE SELECTOR & DUAL CTAs ABOVE THE FOLD --- */}
+                <div className="border border-slate-200/80 py-4 px-4 sm:px-5 mb-5 space-y-4 bg-stone-50/50 rounded-2xl shadow-2xs">
+                  <div className="flex justify-between items-baseline font-mono">
+                    <span className="text-xs font-bold tracking-wider text-slate-500 uppercase">
+                      {perfume.perfumeCategory === 'original' ? 'PRICE PER ML' : 'PRICE'}
+                    </span>
+                    <span className="text-stone-900 font-black text-2xl sm:text-3xl">
+                      {currentPrice.toFixed(2)} BDT
+                    </span>
                   </div>
 
-                  {/* Extract Decant Bottle Size Selector */}
                   <div>
-                    <label className="block text-[10px] font-bold tracking-wider text-slate-400 uppercase font-mono mb-3">
+                    <label className="block text-[10px] font-bold tracking-wider text-slate-500 uppercase font-sans mb-2">
                       SELECT BOTTLE SIZE
                     </label>
                     <div className="grid grid-cols-5 gap-2 max-w-md">
@@ -270,10 +264,10 @@ export default function PerfumeProductPage({ params }: { params: Promise<{ id: s
                           key={size}
                           type="button"
                           onClick={() => setSelectedSize(size)}
-                          className={`rounded-lg py-2.5 text-center text-xs font-bold transition focus:outline-none ${
+                          className={`rounded-xl py-2 text-center text-xs font-bold transition focus:outline-none cursor-pointer ${
                             selectedSize === size
-                              ? 'bg-primary text-slate-900 shadow-md shadow-primary/10'
-                              : 'bg-slate-50 border border-slate-200 text-slate-600 hover:bg-slate-100'
+                              ? 'bg-stone-900 text-white shadow-md'
+                              : 'bg-white border border-stone-200 text-stone-700 hover:bg-slate-100'
                           }`}
                         >
                           {size}ml
@@ -282,13 +276,41 @@ export default function PerfumeProductPage({ params }: { params: Promise<{ id: s
                     </div>
                   </div>
 
+                  {/* Dual Action Buttons: ADD TO CART & BUY NOW */}
+                  <div className="grid grid-cols-2 gap-2.5 pt-1">
+                    <button
+                      onClick={handleAddToBasket}
+                      className="w-full rounded-xl bg-stone-100 border border-stone-300 py-3 text-xs font-bold tracking-wider text-stone-900 hover:bg-stone-200 transition flex items-center justify-center gap-1.5 cursor-pointer"
+                    >
+                      <ShoppingCart className="h-4 w-4" /> ADD TO CART
+                    </button>
+                    <button
+                      onClick={handleBuyNow}
+                      className="w-full rounded-xl bg-stone-900 py-3 text-xs font-bold tracking-wider text-white hover:bg-stone-800 transition flex items-center justify-center gap-1.5 shadow-md shadow-stone-900/10 cursor-pointer"
+                    >
+                      BUY NOW
+                    </button>
+                  </div>
+                </div>
+
+                {/* --- 2. DESCRIPTION & OLFACTORY NOTES (PLACED AFTER PRICE & CTAs) --- */}
+                <div className="space-y-5">
+                  <div>
+                    <h3 className="text-xs font-bold tracking-wider text-slate-900 uppercase font-sans mb-1.5">
+                      Olfactory Description
+                    </h3>
+                    <p className="text-slate-600 text-xs sm:text-sm font-light leading-relaxed">
+                      {perfume.description}
+                    </p>
+                  </div>
+
                   {/* Fragrance Notes Matrix */}
-                  <div className="space-y-4 border-t border-slate-100 pt-6">
-                    <h3 className="text-[10px] font-bold tracking-wider text-slate-400 uppercase font-mono">
+                  <div className="space-y-3 border-t border-slate-100 pt-4">
+                    <h3 className="text-xs font-bold tracking-wider text-slate-900 uppercase font-sans">
                       Olfactory Notes Profile
                     </h3>
                     
-                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 bg-slate-50 border border-slate-150 p-4 rounded-xl">
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 bg-slate-50 border border-slate-200 p-3.5 rounded-xl">
                       <div>
                         <span className="block text-[9px] font-bold tracking-widest text-primary uppercase font-mono">
                           Top Notes
@@ -309,34 +331,14 @@ export default function PerfumeProductPage({ params }: { params: Promise<{ id: s
                       </div>
                     </div>
                   </div>
-
                 </div>
               </div>
-
-              {/* Shopping checkout interface */}
-              <div className="pt-6 border-t border-slate-100 max-w-md">
-                <div className="flex justify-between items-baseline mb-4 font-mono">
-                  <span className="text-[10px] font-bold tracking-wider text-slate-400">
-                    {perfume.perfumeCategory === 'original' ? 'PRICE PER ML' : 'PRICE'}
-                  </span>
-                  <span className="text-primary font-bold text-2xl">
-                    {currentPrice.toFixed(2)} BDT
-                  </span>
-                </div>
-                <button
-                  onClick={handleAddToBasket}
-                  className="w-full rounded-lg bg-primary py-3.5 text-xs font-bold tracking-widest text-slate-900 hover:bg-primary/80 transition flex items-center justify-center gap-2 shadow-md shadow-primary/10 hover:shadow-lg"
-                >
-                  <ShoppingCart className="h-4.5 w-4.5" /> ADD TO CART
-                </button>
-              </div>
-
             </div>
           </div>
 
           {/* Vimeo Presentation Panel */}
           {perfume.vimeoUrl && (
-            <div className="mt-20 border-t border-slate-100 pt-16 max-w-4xl mx-auto text-center">
+            <div className="mt-16 border-t border-slate-100 pt-12 max-w-4xl mx-auto text-center">
               <span className="text-[9px] font-bold tracking-[0.3em] text-primary uppercase font-mono">BRAND VIDEO</span>
               <h2 className="font-sans text-2xl font-black tracking-tight text-slate-900 mt-2 mb-6 uppercase">
                 SCENT INSPIRATION STORY
@@ -348,38 +350,33 @@ export default function PerfumeProductPage({ params }: { params: Promise<{ id: s
         </div>
       </main>
 
-      <footer className="bg-slate-900 text-slate-400 py-12 border-t border-slate-800 font-sans mt-16">
-        <div className="max-w-6xl mx-auto px-6 grid grid-cols-1 md:grid-cols-3 gap-8 text-left text-xs">
-          {/* Brand column */}
-          <div className="space-y-3">
-            <h4 className="text-white font-bold tracking-wider text-sm">ALWEEN LUXURY</h4>
-            <p className="text-slate-500 font-light leading-relaxed">
-              Premium designer perfume decants in Bangladesh. Experience authentic high-end fragrances in affordable bottle sizes.
-            </p>
-          </div>
-          {/* Support column */}
-          <div className="space-y-3">
-            <h4 className="text-white font-bold tracking-wider text-sm">CUSTOMER SUPPORT</h4>
-            <p className="text-slate-500 font-light">Email: support@alween.com</p>
-            <p className="text-slate-500 font-light">Helpline: +880 1322-309746</p>
-            <p className="text-slate-500 font-light">Dhaka, Bangladesh</p>
-          </div>
-          {/* Policies column */}
-          <div className="space-y-3">
-            <h4 className="text-white font-bold tracking-wider text-sm">LEGAL & POLICIES</h4>
-            <div className="flex flex-col gap-1.5 text-slate-500">
-              <button type="button" onClick={() => alert('PRIVACY POLICY\n\nYour privacy is important to us. We secure your personal credentials and order history. We do not sell or lease customer information to third parties.')} className="text-left hover:text-white transition">Privacy Policy</button>
-              <button type="button" onClick={() => alert('RETURN & REFUND POLICY\n\nDue to the hygiene nature of decanted fragrances, we do not accept returns. However, if your order arrives damaged, leaking, or incorrect, please email support@alween.com with photos within 24 hours of delivery for a replacement.')} className="text-left hover:text-white transition">Return & Refund Policy</button>
-              <button type="button" onClick={() => alert('SHIPPING & DELIVERY POLICY\n\nWe ship nationwide across Bangladesh. Delivery inside Dhaka takes 2-3 business days (60 BDT). Delivery outside Dhaka takes 3-5 business days (120 BDT). Free shipping applies on orders above 3000 BDT.')} className="text-left hover:text-white transition">Shipping Policy</button>
-              <button type="button" onClick={() => alert('TERMS OF SERVICE\n\nBy placing an order, you agree to our terms. Scent decants are hand-poured from original authentic bottles into sterile glass vials. We are an independent decanter and not affiliated with the brand owners.')} className="text-left hover:text-white transition">Terms of Service</button>
-            </div>
-          </div>
+      <Footerdemo />
+
+      {/* Mobile Sticky Bottom Purchase Bar (Visible on phones md:hidden) */}
+      <div className="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-white/95 backdrop-blur-md border-t border-stone-200/80 p-2.5 px-4 flex items-center justify-between shadow-[0_-8px_30px_rgba(0,0,0,0.12)]">
+        <div>
+          <span className="block text-[9px] font-bold tracking-wider text-slate-400 font-mono uppercase">
+            {selectedSize}ml Bottled Scent
+          </span>
+          <span className="text-stone-900 font-black text-base font-mono">
+            {currentPrice.toFixed(2)} BDT
+          </span>
         </div>
-        <div className="max-w-6xl mx-auto px-6 border-t border-slate-800 mt-8 pt-6 text-center text-[10px] text-slate-600 font-mono flex flex-col sm:flex-row justify-between gap-4">
-          <p>© 2026 ALWEEN LUXURY SCENTS. ALL RIGHTS RESERVED.</p>
-          <p>DECLARATION: Independent decanter, not affiliated with perfume design houses.</p>
+        <div className="flex items-center gap-2">
+          <button
+            onClick={handleAddToBasket}
+            className="rounded-xl bg-stone-100 border border-stone-300 px-3 py-2 text-xs font-bold tracking-wider text-stone-900 hover:bg-stone-200 transition flex items-center gap-1 cursor-pointer"
+          >
+            <ShoppingCart className="h-3.5 w-3.5" /> CART
+          </button>
+          <button
+            onClick={handleBuyNow}
+            className="rounded-xl bg-stone-900 px-4 py-2 text-xs font-bold tracking-wider text-white hover:bg-stone-800 transition shadow-md cursor-pointer"
+          >
+            BUY NOW
+          </button>
         </div>
-      </footer>
+      </div>
 
       <CheckoutDrawer />
     </div>

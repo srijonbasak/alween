@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { Header } from '../../components/Header';
-import { API_URL } from '../../lib/api';
+import { API_URL, safeParseResponse } from '../../lib/api';
 import { 
   Settings, Database, Users, Plus, Trash2, Edit, AlertCircle, Save, 
   Loader2, LogOut, CheckCircle, ClipboardList, Tag, ExternalLink, Check, Eye,
@@ -212,6 +212,7 @@ export default function AdminPage() {
   const [shippingFeeInsideDhaka, setShippingFeeInsideDhaka] = useState(60);
   const [shippingFeeOutsideDhaka, setShippingFeeOutsideDhaka] = useState(120);
   const [pointsValuation, setPointsValuation] = useState(10);
+  const [heroVimeoUrlsText, setHeroVimeoUrlsText] = useState('');
 
   // Affiliates Campaign list
   const [affiliatesList, setAffiliatesList] = useState<any[]>([]);
@@ -296,6 +297,7 @@ export default function AdminPage() {
         setShippingFeeInsideDhaka(config.shippingFeeInsideDhaka ?? 60);
         setShippingFeeOutsideDhaka(config.shippingFeeOutsideDhaka ?? 120);
         setPointsValuation(config.pointsToDiscountRate);
+        setHeroVimeoUrlsText(config.heroVimeoUrls ? config.heroVimeoUrls.join('\n') : '');
       }
     } catch (e) { console.error('Failed fetching logistics variables:', e); }
   };
@@ -478,7 +480,15 @@ export default function AdminPage() {
         credentials: 'include'
       });
 
-      const data = await res.json();
+      let data: any = {};
+      const contentType = res.headers.get('content-type');
+      if (contentType && contentType.includes('application/json')) {
+        data = await res.json();
+      } else {
+        const text = await res.text();
+        data = { error: res.status === 401 ? 'Admin session expired. Please log in again.' : (text || 'Server error occurred.') };
+      }
+
       if (!res.ok) throw new Error(data.error || 'Failed to save product.');
 
       setActionSuccess(isEditing ? 'Product details updated successfully.' : 'New product catalogued successfully.');
@@ -760,7 +770,8 @@ export default function AdminPage() {
           shippingFee,
           shippingFeeInsideDhaka,
           shippingFeeOutsideDhaka,
-          pointsToDiscountRate: pointsValuation
+          pointsToDiscountRate: pointsValuation,
+          heroVimeoUrls: heroVimeoUrlsText.split('\n').map(url => url.trim()).filter(url => !!url)
         }),
         credentials: 'include'
       });
@@ -1488,7 +1499,14 @@ export default function AdminPage() {
                                     onChange={(e) => setFile6ml(e.target.files?.[0] || null)}
                                     className="w-full text-slate-500 file:mr-2 file:py-1 file:px-2 file:rounded file:border-0 file:text-[9px] file:font-semibold file:bg-slate-100 file:text-slate-700 hover:file:bg-slate-200"
                                   />
-                                  {image6ml && <span className="text-[8px] text-emerald-600 block mt-0.5 truncate">Current: {image6ml.split('/').pop()}</span>}
+                                  {image6ml && (
+                                    <div className="flex items-center justify-between mt-1 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded">
+                                      <span className="text-[8px] text-emerald-700 font-medium truncate">6ml: {image6ml.split('/').pop()}</span>
+                                      <button type="button" onClick={() => setImage6ml('')} className="text-red-500 hover:text-red-700 p-0.5">
+                                        <Trash2 className="h-3 w-3" />
+                                      </button>
+                                    </div>
+                                  )}
                                 </div>
                                 <div>
                                   <label className="block text-slate-500 font-mono mb-1">10ml Bottle Image</label>
@@ -1497,7 +1515,14 @@ export default function AdminPage() {
                                     onChange={(e) => setFile10ml(e.target.files?.[0] || null)}
                                     className="w-full text-slate-500 file:mr-2 file:py-1 file:px-2 file:rounded file:border-0 file:text-[9px] file:font-semibold file:bg-slate-100 file:text-slate-700 hover:file:bg-slate-200"
                                   />
-                                  {image10ml && <span className="text-[8px] text-emerald-600 block mt-0.5 truncate">Current: {image10ml.split('/').pop()}</span>}
+                                  {image10ml && (
+                                    <div className="flex items-center justify-between mt-1 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded">
+                                      <span className="text-[8px] text-emerald-700 font-medium truncate">10ml: {image10ml.split('/').pop()}</span>
+                                      <button type="button" onClick={() => setImage10ml('')} className="text-red-500 hover:text-red-700 p-0.5">
+                                        <Trash2 className="h-3 w-3" />
+                                      </button>
+                                    </div>
+                                  )}
                                 </div>
                                 <div>
                                   <label className="block text-slate-500 font-mono mb-1">15ml Bottle Image</label>
@@ -1506,7 +1531,14 @@ export default function AdminPage() {
                                     onChange={(e) => setFile15ml(e.target.files?.[0] || null)}
                                     className="w-full text-slate-500 file:mr-2 file:py-1 file:px-2 file:rounded file:border-0 file:text-[9px] file:font-semibold file:bg-slate-100 file:text-slate-700 hover:file:bg-slate-200"
                                   />
-                                  {image15ml && <span className="text-[8px] text-emerald-600 block mt-0.5 truncate">Current: {image15ml.split('/').pop()}</span>}
+                                  {image15ml && (
+                                    <div className="flex items-center justify-between mt-1 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded">
+                                      <span className="text-[8px] text-emerald-700 font-medium truncate">15ml: {image15ml.split('/').pop()}</span>
+                                      <button type="button" onClick={() => setImage15ml('')} className="text-red-500 hover:text-red-700 p-0.5">
+                                        <Trash2 className="h-3 w-3" />
+                                      </button>
+                                    </div>
+                                  )}
                                 </div>
                                 <div>
                                   <label className="block text-slate-500 font-mono mb-1">30ml Bottle Image</label>
@@ -1515,7 +1547,14 @@ export default function AdminPage() {
                                     onChange={(e) => setFile30ml(e.target.files?.[0] || null)}
                                     className="w-full text-slate-500 file:mr-2 file:py-1 file:px-2 file:rounded file:border-0 file:text-[9px] file:font-semibold file:bg-slate-100 file:text-slate-700 hover:file:bg-slate-200"
                                   />
-                                  {image30ml && <span className="text-[8px] text-emerald-600 block mt-0.5 truncate">Current: {image30ml.split('/').pop()}</span>}
+                                  {image30ml && (
+                                    <div className="flex items-center justify-between mt-1 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded">
+                                      <span className="text-[8px] text-emerald-700 font-medium truncate">30ml: {image30ml.split('/').pop()}</span>
+                                      <button type="button" onClick={() => setImage30ml('')} className="text-red-500 hover:text-red-700 p-0.5">
+                                        <Trash2 className="h-3 w-3" />
+                                      </button>
+                                    </div>
+                                  )}
                                 </div>
                                 <div>
                                   <label className="block text-slate-500 font-mono mb-1">50ml Bottle Image</label>
@@ -1524,7 +1563,14 @@ export default function AdminPage() {
                                     onChange={(e) => setFile50ml(e.target.files?.[0] || null)}
                                     className="w-full text-slate-500 file:mr-2 file:py-1 file:px-2 file:rounded file:border-0 file:text-[9px] file:font-semibold file:bg-slate-100 file:text-slate-700 hover:file:bg-slate-200"
                                   />
-                                  {image50ml && <span className="text-[8px] text-emerald-600 block mt-0.5 truncate">Current: {image50ml.split('/').pop()}</span>}
+                                  {image50ml && (
+                                    <div className="flex items-center justify-between mt-1 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded">
+                                      <span className="text-[8px] text-emerald-700 font-medium truncate">50ml: {image50ml.split('/').pop()}</span>
+                                      <button type="button" onClick={() => setImage50ml('')} className="text-red-500 hover:text-red-700 p-0.5">
+                                        <Trash2 className="h-3 w-3" />
+                                      </button>
+                                    </div>
+                                  )}
                                 </div>
                                 <div>
                                   <label className="block text-slate-500 font-mono mb-1">Original Bottle Image</label>
@@ -1533,7 +1579,14 @@ export default function AdminPage() {
                                     onChange={(e) => setFileOriginal(e.target.files?.[0] || null)}
                                     className="w-full text-slate-500 file:mr-2 file:py-1 file:px-2 file:rounded file:border-0 file:text-[9px] file:font-semibold file:bg-slate-100 file:text-slate-700 hover:file:bg-slate-200"
                                   />
-                                  {originalBottleImage && <span className="text-[8px] text-emerald-600 block mt-0.5 truncate">Current: {originalBottleImage.split('/').pop()}</span>}
+                                  {originalBottleImage && (
+                                    <div className="flex items-center justify-between mt-1 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded">
+                                      <span className="text-[8px] text-emerald-700 font-medium truncate">Original: {originalBottleImage.split('/').pop()}</span>
+                                      <button type="button" onClick={() => setOriginalBottleImage('')} className="text-red-500 hover:text-red-700 p-0.5">
+                                        <Trash2 className="h-3 w-3" />
+                                      </button>
+                                    </div>
+                                  )}
                                 </div>
                               </div>
                               <div>
@@ -1543,7 +1596,14 @@ export default function AdminPage() {
                                   onChange={(e) => setFilePackaging(e.target.files?.[0] || null)}
                                   className="w-full text-slate-500 file:mr-2 file:py-1 file:px-2 file:rounded file:border-0 file:text-[9px] file:font-semibold file:bg-slate-100 file:text-slate-700 hover:file:bg-slate-200"
                                 />
-                                {packagingImage && <span className="text-[8px] text-emerald-600 block mt-0.5 truncate">Current: {packagingImage.split('/').pop()}</span>}
+                                {packagingImage && (
+                                  <div className="flex items-center justify-between mt-1 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded">
+                                    <span className="text-[8px] text-emerald-700 font-medium truncate">Packaging: {packagingImage.split('/').pop()}</span>
+                                    <button type="button" onClick={() => setPackagingImage('')} className="text-red-500 hover:text-red-700 p-0.5">
+                                      <Trash2 className="h-3 w-3" />
+                                    </button>
+                                  </div>
+                                )}
                               </div>
                             </div>
                           )}
@@ -2355,6 +2415,24 @@ export default function AdminPage() {
                             <span>1 Point = 1 BDT</span>
                             <span>100 Points = 1 BDT</span>
                           </div>
+                        </div>
+                      </div>
+
+                      <div className="space-y-3 border-t border-slate-200 pt-5">
+                        <span className="block text-[9px] font-bold text-slate-400 font-mono uppercase tracking-wider">
+                          Hero Carousel Vimeo Videos
+                        </span>
+                        <div>
+                          <label className="block text-[8px] font-bold text-slate-500 font-mono uppercase mb-1">
+                            Vimeo Video URLs (One URL per line)
+                          </label>
+                          <textarea
+                            value={heroVimeoUrlsText}
+                            onChange={(e) => setHeroVimeoUrlsText(e.target.value)}
+                            placeholder="https://vimeo.com/1211733718&#10;https://vimeo.com/1211735131"
+                            rows={4}
+                            className="w-full bg-white border border-slate-300 rounded-lg px-3 py-2 text-xs focus:outline-none text-slate-800 font-mono"
+                          />
                         </div>
                       </div>
 

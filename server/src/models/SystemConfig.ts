@@ -7,6 +7,7 @@ export interface ISystemConfig extends Document {
   shippingFeeOutsideDhaka: number;
   isFreeDeliveryEnabled: boolean;
   pointsToDiscountRate: number; // e.g. 100 points = 1 BDT/USD discount
+  heroVimeoUrls: string[];
   updatedAt: Date;
 }
 
@@ -17,6 +18,7 @@ const SystemConfigSchema: Schema = new Schema({
   shippingFeeOutsideDhaka: { type: Number, required: true, default: 120 }, // Default outside Dhaka BDT 120
   isFreeDeliveryEnabled: { type: Boolean, required: true, default: true },
   pointsToDiscountRate: { type: Number, required: true, default: 100 }, // Default 100 points = 1 BDT discount
+  heroVimeoUrls: { type: [String], default: ['https://vimeo.com/1211733718', 'https://vimeo.com/1211735131', 'https://vimeo.com/1211748766'] },
   updatedAt: { type: Date, default: Date.now }
 });
 

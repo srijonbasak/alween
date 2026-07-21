@@ -3,10 +3,12 @@ import SystemConfig from '../models/SystemConfig';
 
 export const getConfig = async (req: Request, res: Response): Promise<void> => {
   try {
-    let config = await SystemConfig.findOne();
+    res.setHeader('Cache-Control', 'public, max-age=300, stale-while-revalidate=3600');
+    let config = await SystemConfig.findOne().lean();
     if (!config) {
-      config = new SystemConfig();
-      await config.save();
+      const newConfig = new SystemConfig();
+      await newConfig.save();
+      config = newConfig.toObject() as any;
     }
     res.json(config);
   } catch (error: any) {
@@ -22,7 +24,8 @@ export const updateConfig = async (req: Request, res: Response): Promise<void> =
       shippingFeeInsideDhaka, 
       shippingFeeOutsideDhaka, 
       isFreeDeliveryEnabled, 
-      pointsToDiscountRate 
+      pointsToDiscountRate,
+      heroVimeoUrls
     } = req.body;
     
     let config = await SystemConfig.findOne();
@@ -36,6 +39,7 @@ export const updateConfig = async (req: Request, res: Response): Promise<void> =
     if (shippingFeeOutsideDhaka !== undefined) config.shippingFeeOutsideDhaka = Number(shippingFeeOutsideDhaka);
     if (isFreeDeliveryEnabled !== undefined) config.isFreeDeliveryEnabled = !!isFreeDeliveryEnabled;
     if (pointsToDiscountRate !== undefined) config.pointsToDiscountRate = Number(pointsToDiscountRate);
+    if (heroVimeoUrls !== undefined) config.heroVimeoUrls = Array.isArray(heroVimeoUrls) ? heroVimeoUrls : [];
     config.updatedAt = new Date();
 
     await config.save();

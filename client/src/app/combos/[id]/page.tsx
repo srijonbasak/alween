@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { Header } from '../../../components/Header';
+import { Footerdemo } from '../../../components/ui/footer-section';
 import { CheckoutDrawer } from '../../../components/CheckoutDrawer';
 import { useCart } from '../../../context/CartContext';
 import { API_URL } from '../../../lib/api';
@@ -181,7 +182,7 @@ export default function ComboProductDetailPage({ params }: { params: Promise<{ i
             <div className="lg:col-span-6 flex flex-col justify-between text-left space-y-6">
               <div>
                 <div className="flex items-center gap-2 mb-3">
-                  <span className="bg-blue-50 border border-blue-200 text-blue-750 text-[8px] font-extrabold tracking-widest px-2 py-0.5 rounded font-mono uppercase">
+                  <span className="bg-stone-50 border border-stone-200 text-stone-700 text-[8px] font-extrabold tracking-widest px-2 py-0.5 rounded font-sans uppercase">
                     {combo.comboBottleCount} Bottle Combo Box
                   </span>
                   {combo.isExcludedFromDiscounts && (
@@ -271,9 +272,7 @@ export default function ComboProductDetailPage({ params }: { params: Promise<{ i
         </div>
       </main>
 
-      <footer className="bg-[#FAF8F5] border-t border-[#EAE5DB] py-8 text-center text-xs text-slate-400 font-mono mt-16">
-        <p>© 2026 ALWEEN LUXURY SCENTS. ALL RIGHTS RESERVED.</p>
-      </footer>
+      <Footerdemo />
 
       <CheckoutDrawer />
     </div>

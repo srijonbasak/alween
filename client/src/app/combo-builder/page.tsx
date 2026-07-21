@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { Header } from '../../components/Header';
+import { Footerdemo } from '../../components/ui/footer-section';
 import { CheckoutDrawer } from '../../components/CheckoutDrawer';
 import { useCart } from '../../context/CartContext';
 import { API_URL } from '../../lib/api';
@@ -202,7 +203,7 @@ export default function ComboBuilderPage() {
 
               {/* Sizing extractions toggle for slots */}
               <div>
-                <h3 className="block text-[10px] font-bold tracking-wider text-slate-400 font-mono uppercase mb-3">
+                <h3 className="block text-[10px] font-bold tracking-widest text-slate-400 font-sans uppercase mb-3">
                   2. SELECT BOTTLE SIZE
                 </h3>
                 <div className="grid grid-cols-5 gap-2">
@@ -212,7 +213,7 @@ export default function ComboBuilderPage() {
                       onClick={() => setSelectedSize(size)}
                       className={`rounded py-2 text-center text-xs font-bold transition ${
                         selectedSize === size
-                          ? 'border border-primary text-primary bg-blue-50'
+                          ? 'border border-stone-800 text-stone-900 bg-stone-100'
                           : 'bg-white border border-slate-200 text-slate-500 hover:border-slate-300'
                       }`}
                     >
@@ -224,7 +225,7 @@ export default function ComboBuilderPage() {
 
               {/* The Active Slots Display */}
               <div>
-                <h3 className="block text-[10px] font-bold tracking-wider text-slate-400 font-mono uppercase mb-4">
+                <h3 className="block text-[10px] font-bold tracking-widest text-slate-400 font-sans uppercase mb-4">
                   3. CHOSEN FRAGRANCES
                 </h3>
                 
@@ -235,7 +236,7 @@ export default function ComboBuilderPage() {
                       onClick={() => setActiveSlotIdx(idx)}
                       className={`relative flex items-center justify-between p-4 rounded-xl cursor-pointer transition-all border ${
                         activeSlotIdx === idx
-                          ? 'border-primary bg-blue-50/10'
+                          ? 'border-stone-800 bg-stone-50'
                           : slot
                           ? 'border-slate-200 bg-white'
                           : 'border-dashed border-slate-300 bg-slate-50/30 hover:border-slate-400'
@@ -256,7 +257,7 @@ export default function ComboBuilderPage() {
                         {slot ? (
                           <div>
                             <div className="font-sans text-sm font-bold text-slate-800">{slot.name}</div>
-                            <div className="text-[10px] text-slate-500 font-mono mt-0.5">
+                            <div className="text-[10px] text-slate-500 font-sans tracking-widest mt-0.5">
                               {slot.selectedSizeMl}ml decant • Product Code: {slot.internalFormulaKey}
                             </div>
                           </div>
@@ -270,7 +271,7 @@ export default function ComboBuilderPage() {
                       <div className="flex items-center gap-3">
                         {slot && (
                           <>
-                            <span className="text-xs font-bold text-primary font-mono">{slot.price} BDT</span>
+                            <span className="text-xs font-bold text-stone-900 font-sans tracking-widest">{slot.price} BDT</span>
                             <button
                               onClick={(e) => {
                                 e.stopPropagation();
@@ -284,7 +285,7 @@ export default function ComboBuilderPage() {
                           </>
                         )}
                         {!slot && activeSlotIdx === idx && (
-                          <span className="text-[9px] font-bold text-blue-500 tracking-wider font-mono">ACTIVE SLOT</span>
+                          <span className="text-[9px] font-bold text-stone-800 tracking-widest font-sans">ACTIVE SLOT</span>
                         )}
                       </div>
                     </motion.div>
@@ -299,7 +300,7 @@ export default function ComboBuilderPage() {
               
               {/* Select list */}
               <div className="bg-slate-50 border border-slate-200 rounded-2xl p-6">
-                <h3 className="block text-[10px] font-bold tracking-wider text-slate-400 font-mono uppercase mb-4">
+                <h3 className="block text-[10px] font-bold tracking-widest text-slate-400 font-sans uppercase mb-4">
                   4. OUR COLLECTION
                 </h3>
                 
@@ -327,7 +328,7 @@ export default function ComboBuilderPage() {
                             {perfume.topNotes}
                           </div>
                         </div>
-                        <span className="text-[10px] font-mono font-bold text-primary shrink-0">
+                        <span className="text-[10px] font-sans font-bold text-stone-800 tracking-widest shrink-0">
                           {perfume.pricePerMl} BDT/ml
                         </span>
                       </div>
@@ -359,14 +360,14 @@ export default function ComboBuilderPage() {
                   </div>
                   <div className="flex justify-between text-xs text-slate-500">
                     <span>Estimated Price:</span>
-                    <span className="font-bold text-primary font-mono">{totalBoxPrice} BDT</span>
+                    <span className="font-bold text-stone-900 font-sans tracking-widest">{totalBoxPrice} BDT</span>
                   </div>
                 </div>
 
                 <button
                   onClick={handleProceedToCheckout}
                   disabled={!allSlotsFilled}
-                  className="w-full rounded-xl py-3.5 text-xs font-bold tracking-widest text-white bg-primary hover:bg-blue-700 transition flex items-center justify-center gap-1.5 disabled:opacity-30 disabled:hover:bg-primary disabled:cursor-not-allowed shadow-md shadow-blue-500/10"
+                  className="w-full rounded-xl py-3.5 text-xs font-bold tracking-widest text-white bg-stone-900 hover:bg-stone-800 transition flex items-center justify-center gap-1.5 disabled:opacity-30 disabled:hover:bg-stone-900 disabled:cursor-not-allowed shadow-md shadow-stone-900/10"
                 >
                   {allSlotsFilled ? (
                     <>
@@ -385,38 +386,7 @@ export default function ComboBuilderPage() {
         </div>
       </main>
 
-      <footer className="bg-slate-900 text-slate-400 py-12 border-t border-slate-800 font-sans mt-16">
-        <div className="max-w-6xl mx-auto px-6 grid grid-cols-1 md:grid-cols-3 gap-8 text-left text-xs">
-          {/* Brand column */}
-          <div className="space-y-3">
-            <h4 className="text-white font-bold tracking-wider text-sm">ALWEEN LUXURY</h4>
-            <p className="text-slate-500 font-light leading-relaxed">
-              Premium designer perfume decants in Bangladesh. Experience authentic high-end fragrances in affordable bottle sizes.
-            </p>
-          </div>
-          {/* Support column */}
-          <div className="space-y-3">
-            <h4 className="text-white font-bold tracking-wider text-sm">CUSTOMER SUPPORT</h4>
-            <p className="text-slate-500 font-light">Email: support@alween.com</p>
-            <p className="text-slate-500 font-light">Helpline: +880 1322-309746</p>
-            <p className="text-slate-500 font-light">Dhaka, Bangladesh</p>
-          </div>
-          {/* Policies column */}
-          <div className="space-y-3">
-            <h4 className="text-white font-bold tracking-wider text-sm">LEGAL & POLICIES</h4>
-            <div className="flex flex-col gap-1.5 text-slate-500">
-              <button type="button" onClick={() => alert('PRIVACY POLICY\n\nYour privacy is important to us. We secure your personal credentials and order history. We do not sell or lease customer information to third parties.')} className="text-left hover:text-white transition">Privacy Policy</button>
-              <button type="button" onClick={() => alert('RETURN & REFUND POLICY\n\nDue to the hygiene nature of decanted fragrances, we do not accept returns. However, if your order arrives damaged, leaking, or incorrect, please email support@alween.com with photos within 24 hours of delivery for a replacement.')} className="text-left hover:text-white transition">Return & Refund Policy</button>
-              <button type="button" onClick={() => alert('SHIPPING & DELIVERY POLICY\n\nWe ship nationwide across Bangladesh. Delivery inside Dhaka takes 2-3 business days (60 BDT). Delivery outside Dhaka takes 3-5 business days (120 BDT). Free shipping applies on orders above 3000 BDT.')} className="text-left hover:text-white transition">Shipping Policy</button>
-              <button type="button" onClick={() => alert('TERMS OF SERVICE\n\nBy placing an order, you agree to our terms. Scent decants are hand-poured from original authentic bottles into sterile glass vials. We are an independent decanter and not affiliated with the brand owners.')} className="text-left hover:text-white transition">Terms of Service</button>
-            </div>
-          </div>
-        </div>
-        <div className="max-w-6xl mx-auto px-6 border-t border-slate-800 mt-8 pt-6 text-center text-[10px] text-slate-600 font-mono flex flex-col sm:flex-row justify-between gap-4">
-          <p>© 2026 ALWEEN LUXURY SCENTS. ALL RIGHTS RESERVED.</p>
-          <p>DECLARATION: Independent decanter, not affiliated with perfume design houses.</p>
-        </div>
-      </footer>
+      <Footerdemo />
 
       {/* Slide-out Checkout Drawer */}
       <CheckoutDrawer />

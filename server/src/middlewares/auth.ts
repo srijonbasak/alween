@@ -1,6 +1,9 @@
 import { Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
 
+if (!process.env.JWT_SECRET) {
+  console.warn('⚠️ WARNING: JWT_SECRET environment variable is missing. Using default fallback key for local dev.');
+}
 const JWT_SECRET = process.env.JWT_SECRET || 'fallback_secret_key_12345';
 
 export interface AuthenticatedRequest extends Request {

@@ -24,10 +24,8 @@ app.use(sanitizeMiddleware);
 // Apply Custom CORS preflight and cache header optimizations
 app.use(corsSpeedup);
 
-// Serve uploads folder statically
-// The spec requests: app.use('/uploads', express.static(path.join(__dirname, '../public/uploads')));
-// When compiled to dist/index.js, __dirname will be dist/, so ../public/uploads goes back to root server folder correctly.
-app.use('/uploads', express.static(path.join(__dirname, '../public/uploads')));
+// Serve uploads folder statically using process.cwd() for consistent pathing across dev and dist
+app.use('/uploads', express.static(path.join(process.cwd(), 'public/uploads')));
 
 // Serve generated laboratory picking slip invoices dynamically on-the-fly directly to the browser
 app.get(['/invoices/:filename', '/api/invoices/:filename'], async (req, res) => {
@@ -71,32 +69,23 @@ app.use((err: any, req: express.Request, res: express.Response, next: express.Ne
 // Connect to MongoDB & Start Listening
 const MONGO_URI = process.env.MONGO_URI || 'mongodb://127.0.0.1:27017/alweenfragrance';
 
-const startServer = () => {
+const connectDB = async () => {
+  try {
+    await mongoose.connect(MONGO_URI);
+    console.log('Successfully connected to MongoDB.');
+  } catch (err: any) {
+    console.error('MongoDB primary URI error, attempting local fallback:', err.message);
+    const localUri = 'mongodb://127.0.0.1:27017/alweenfragrance';
+    if (MONGO_URI !== localUri) {
+      await mongoose.connect(localUri);
+      console.log('Successfully connected to local fallback MongoDB.');
+    } else {
+      process.exit(1);
+    }
+  }
   app.listen(PORT, () => {
     console.log(`Perfume Enterprise Server running on port ${PORT}`);
   });
 };
 
-mongoose.connect(MONGO_URI)
-  .then(() => {
-    console.log('Successfully connected to MongoDB.');
-    startServer();
-  })
-  .catch((err) => {
-    console.error('MongoDB initial connection error on primary URI, trying local fallback:', err.message);
-    const localUri = 'mongodb://127.0.0.1:27017/alweenfragrance';
-    
-    if (MONGO_URI !== localUri) {
-      mongoose.connect(localUri)
-        .then(() => {
-          console.log('Successfully connected to local fallback MongoDB.');
-          startServer();
-        })
-        .catch((localErr) => {
-          console.error('MongoDB connection failed on local fallback too:', localErr.message);
-          process.exit(1);
-        });
-    } else {
-      process.exit(1);
-    }
-  });
+connectDB();

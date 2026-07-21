@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { Header } from '../../components/Header';
+import { Footerdemo } from '../../components/ui/footer-section';
 import { CheckoutDrawer } from '../../components/CheckoutDrawer';
 import { API_URL } from '../../lib/api';
 import { Award, User, Copy, Check, Info, Users, Gift, ShieldAlert } from 'lucide-react';
@@ -521,9 +522,7 @@ export default function AffiliatePage() {
         </div>
       </main>
 
-      <footer className="bg-[#FAF8F5] border-t border-[#EAE5DB] py-8 text-center text-xs text-slate-400 font-mono mt-16">
-        <p>© 2026 ALWEEN FRAGRANCE. ALL RIGHTS RESERVED. SECURE DECOUPLED MERN CLIENT ENGINE.</p>
-      </footer>
+      <Footerdemo />
 
       {/* Slide-out Checkout Drawer */}
       <CheckoutDrawer />

@@ -2,7 +2,7 @@ import multer from 'multer';
 import path from 'path';
 import fs from 'fs';
 
-const uploadDirectory = path.join(__dirname, '../../public/uploads');
+const uploadDirectory = path.join(process.cwd(), 'public/uploads');
 
 // Ensure directory exists
 if (!fs.existsSync(uploadDirectory)) {

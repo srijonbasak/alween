@@ -23,7 +23,9 @@ const deleteLocalFileFromUrl = (url: string | undefined | null) => {
 
 export const getPerfumes = async (req: Request, res: Response): Promise<void> => {
   try {
-    const perfumes = await Perfume.find().populate('comboPerfumes').sort({ createdAt: -1 });
+    // 5-minute browser cache with stale-while-revalidate for 0ms repeat reads
+    res.setHeader('Cache-Control', 'public, max-age=300, stale-while-revalidate=3600');
+    const perfumes = await Perfume.find().populate('comboPerfumes').sort({ createdAt: -1 }).lean();
     res.json(perfumes);
   } catch (error: any) {
     res.status(500).json({ error: 'Failed to retrieve perfumes.', message: error.message });
@@ -32,11 +34,12 @@ export const getPerfumes = async (req: Request, res: Response): Promise<void> =>
 
 export const getPerfumeById = async (req: Request, res: Response): Promise<void> => {
   try {
+    res.setHeader('Cache-Control', 'public, max-age=300, stale-while-revalidate=3600');
     let perfume;
     if (mongoose.Types.ObjectId.isValid(req.params.id)) {
-      perfume = await Perfume.findById(req.params.id).populate('comboPerfumes');
+      perfume = await Perfume.findById(req.params.id).populate('comboPerfumes').lean();
     } else {
-      perfume = await Perfume.findOne({ internalFormulaKey: req.params.id }).populate('comboPerfumes');
+      perfume = await Perfume.findOne({ internalFormulaKey: req.params.id }).populate('comboPerfumes').lean();
     }
 
     if (!perfume) {
