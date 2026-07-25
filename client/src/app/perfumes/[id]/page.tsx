@@ -114,7 +114,7 @@ export default function PerfumeProductPage({ params }: { params: Promise<{ id: s
     if (selectedSize === 15 && perfume.price15ml && perfume.price15ml > 0) return perfume.price15ml;
     if (selectedSize === 30 && perfume.price30ml && perfume.price30ml > 0) return perfume.price30ml;
     if (selectedSize === 50 && perfume.price50ml && perfume.price50ml > 0) return perfume.price50ml;
-    
+
     // Linear fallback pricing
     return perfume.pricePerMl * selectedSize;
   };
@@ -125,38 +125,38 @@ export default function PerfumeProductPage({ params }: { params: Promise<{ id: s
     if (perfume.perfumeCategory === 'original') {
       return perfume.imageUrls && perfume.imageUrls.length > 0 ? perfume.imageUrls : ['https://images.unsplash.com/photo-1547887537-6158d64c35b3?auto=format&fit=crop&q=80&w=600'];
     }
-    
+
     const images: string[] = [];
-    
+
     // Size-specific image
     const sizeKey = `image${selectedSize}ml` as keyof typeof perfume;
     const sizeImage = perfume[sizeKey] as string | undefined;
     if (sizeImage && sizeImage.trim() !== '') {
       images.push(sizeImage);
     }
-    
+
     // Original bottle
     if (perfume.originalBottleImage && perfume.originalBottleImage.trim() !== '') {
       images.push(perfume.originalBottleImage);
     }
-    
+
     // Packaging
     if (perfume.packagingImage && perfume.packagingImage.trim() !== '') {
       images.push(perfume.packagingImage);
     }
-    
+
     // Fallback to primary image URL
     if (images.length === 0 && perfume.imageUrls && perfume.imageUrls.length > 0) {
       images.push(perfume.imageUrls[0]);
     }
-    
+
     // Append remaining images
     if (perfume.imageUrls) {
       perfume.imageUrls.forEach(url => {
         if (!images.includes(url)) images.push(url);
       });
     }
-    
+
     return images;
   };
 
@@ -188,7 +188,7 @@ export default function PerfumeProductPage({ params }: { params: Promise<{ id: s
 
       <main className="flex-1 py-6 sm:py-10 bg-white">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          
+
           {/* Back Navigation Link */}
           <div className="mb-4">
             <Link href="/" className="text-[10px] font-bold tracking-widest text-slate-400 hover:text-slate-900 transition flex items-center gap-1.5 uppercase font-mono">
@@ -197,7 +197,7 @@ export default function PerfumeProductPage({ params }: { params: Promise<{ id: s
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-start">
-            
+
             {/* Left Column: Image Gallery Viewer */}
             <div className="lg:col-span-6 space-y-3">
               <div className="relative aspect-square w-full overflow-hidden rounded-2xl bg-slate-50 border border-slate-100 shadow-sm">
@@ -220,9 +220,8 @@ export default function PerfumeProductPage({ params }: { params: Promise<{ id: s
                     <button
                       key={index}
                       onClick={() => setActiveImageIdx(index)}
-                      className={`h-12 w-12 rounded-lg overflow-hidden border-2 shrink-0 transition ${
-                        activeImageIdx === index ? 'border-primary' : 'border-slate-200 hover:border-slate-350'
-                      }`}
+                      className={`h-12 w-12 rounded-lg overflow-hidden border-2 shrink-0 transition ${activeImageIdx === index ? 'border-primary' : 'border-slate-200 hover:border-slate-350'
+                        }`}
                     >
                       <img src={url} alt="" className="h-full w-full object-cover" />
                     </button>
@@ -237,7 +236,7 @@ export default function PerfumeProductPage({ params }: { params: Promise<{ id: s
                 <h1 className="font-sans text-2xl sm:text-4xl font-black tracking-tight text-slate-900 uppercase">
                   {perfume.name}
                 </h1>
-                
+
                 <div className="text-[10px] text-slate-400 font-mono tracking-widest mt-1 mb-4 uppercase flex justify-between max-w-[200px]">
                   <span>Product SKU:</span>
                   <span className="font-bold text-slate-800">{perfume.internalFormulaKey}</span>
@@ -264,11 +263,10 @@ export default function PerfumeProductPage({ params }: { params: Promise<{ id: s
                           key={size}
                           type="button"
                           onClick={() => setSelectedSize(size)}
-                          className={`rounded-xl py-2 text-center text-xs font-bold transition focus:outline-none cursor-pointer ${
-                            selectedSize === size
+                          className={`rounded-xl py-2 text-center text-xs font-bold transition focus:outline-none cursor-pointer ${selectedSize === size
                               ? 'bg-stone-900 text-white shadow-md'
                               : 'bg-white border border-stone-200 text-stone-700 hover:bg-slate-100'
-                          }`}
+                            }`}
                         >
                           {size}ml
                         </button>
@@ -309,7 +307,7 @@ export default function PerfumeProductPage({ params }: { params: Promise<{ id: s
                     <h3 className="text-xs font-bold tracking-wider text-slate-900 uppercase font-sans">
                       Olfactory Notes Profile
                     </h3>
-                    
+
                     <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 bg-slate-50 border border-slate-200 p-3.5 rounded-xl">
                       <div>
                         <span className="block text-[9px] font-bold tracking-widest text-primary uppercase font-mono">

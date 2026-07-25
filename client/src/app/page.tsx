@@ -266,7 +266,7 @@ const STATIC_HERO_PERFUMES: Perfume[] = [
 export default function LandingPage() {
   const { addToCart, setIsDrawerOpen } = useCart();
   const router = useRouter();
-  
+
   // Default values initialized statically to prevent server delays
   const [carouselItems, setCarouselItems] = useState<Perfume[]>(STATIC_HERO_PERFUMES);
   const [gridItems, setGridItems] = useState<Perfume[]>([]);
@@ -320,13 +320,12 @@ export default function LandingPage() {
               className="h-full w-full object-cover transition duration-700 group-hover:scale-105"
             />
             <div className="absolute inset-0 bg-gradient-to-t from-slate-900/40 via-transparent to-transparent opacity-60" />
-            
+
             <div className="absolute top-3 left-3 flex flex-col gap-1.5">
-              <span className={`text-[8px] font-extrabold tracking-widest px-2 py-0.5 rounded shadow-sm uppercase font-sans ${
-                isCombo
+              <span className={`text-[8px] font-extrabold tracking-widest px-2 py-0.5 rounded shadow-sm uppercase font-sans ${isCombo
                   ? 'bg-stone-900 text-white'
                   : 'bg-stone-850 text-white'
-              }`}>
+                }`}>
                 {isCombo ? 'COMBO SCENT PACK' : (perfume.perfumeCategory === 'original' ? 'ORIGINAL' : 'INSPIRED')}
               </span>
               {perfume.isExcludedFromDiscounts && (
@@ -344,7 +343,7 @@ export default function LandingPage() {
           <h3 className="font-sans text-base font-bold text-slate-900 mb-2 group-hover:text-amber-600 transition-colors uppercase">
             {perfume.name}
           </h3>
-          
+
           <p className="text-slate-500 text-xs font-light line-clamp-3 leading-relaxed mb-6">
             {perfume.description}
           </p>
@@ -424,7 +423,7 @@ export default function LandingPage() {
         if (Array.isArray(parsed) && parsed.length > 0) {
           const customDBItems = parsed.filter(p => !p.internalFormulaKey.startsWith('ST-'));
           setGridItems(customDBItems);
-          
+
           // Also set carousel items from offline cache if featured items exist
           const featuredDBItems = parsed.filter(p => p.isFeatured === true);
           if (featuredDBItems.length > 0) {
@@ -544,7 +543,7 @@ export default function LandingPage() {
             description: 'Vimeo Video Walkthrough',
             id: `video-${idx}`
           }))}
-          onItemClick={() => {}}
+          onItemClick={() => { }}
         >
           <div className="flex flex-col sm:flex-row gap-3 justify-center items-center max-w-md mx-auto mt-6 w-full">
             <NeonButton
@@ -568,7 +567,7 @@ export default function LandingPage() {
 
         {/* Collection Section split into Inspired and Original */}
         <section id="collection" className="py-20 sm:py-24 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-20">
-          
+
           {/* Inspired Creations */}
           <div>
             <div className="text-center mb-12">
@@ -650,7 +649,7 @@ export default function LandingPage() {
                         className="h-full w-full object-cover"
                       />
                     </div>
-                    
+
                     {/* Thumbnail gallery */}
                     {selectedPerfume.imageUrls && selectedPerfume.imageUrls.length > 1 && (
                       <div className="flex gap-2 mt-3 overflow-x-auto py-1">
@@ -658,9 +657,8 @@ export default function LandingPage() {
                           <button
                             key={index}
                             onClick={() => setActiveDetailImageIdx(index)}
-                            className={`h-11 w-11 rounded overflow-hidden border-2 shrink-0 transition ${
-                              activeDetailImageIdx === index ? 'border-primary' : 'border-slate-200'
-                            }`}
+                            className={`h-11 w-11 rounded overflow-hidden border-2 shrink-0 transition ${activeDetailImageIdx === index ? 'border-primary' : 'border-slate-200'
+                              }`}
                           >
                             <img src={url} alt="" className="h-full w-full object-cover" loading="lazy" />
                           </button>
@@ -678,11 +676,10 @@ export default function LandingPage() {
                   <div className="flex flex-col justify-between text-left">
                     <div>
                       <div className="flex items-center gap-2 mb-2">
-                        <span className={`text-[7px] font-extrabold tracking-widest px-2 py-0.5 rounded border uppercase ${
-                          (selectedPerfume as any).type === 'combo'
+                        <span className={`text-[7px] font-extrabold tracking-widest px-2 py-0.5 rounded border uppercase ${(selectedPerfume as any).type === 'combo'
                             ? 'bg-stone-900 border-stone-800 text-white'
                             : 'bg-stone-50 border-stone-200 text-stone-700'
-                        }`}>
+                          }`}>
                           {(selectedPerfume as any).type === 'combo' ? 'Combo Box' : 'Single Fragrance'}
                         </span>
                       </div>
@@ -716,11 +713,10 @@ export default function LandingPage() {
                                   key={size}
                                   type="button"
                                   onClick={() => setSelectedSize(size)}
-                                  className={`rounded-lg py-2 text-center text-xs font-bold transition focus:outline-none cursor-pointer ${
-                                    selectedSize === size
+                                  className={`rounded-lg py-2 text-center text-xs font-bold transition focus:outline-none cursor-pointer ${selectedSize === size
                                       ? 'bg-stone-900 text-white shadow-md'
                                       : 'bg-white border border-stone-200 text-stone-600 hover:bg-slate-100'
-                                  }`}
+                                    }`}
                                 >
                                   {size}ml
                                 </button>

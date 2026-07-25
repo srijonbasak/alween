@@ -155,7 +155,12 @@ export const createPerfume = async (req: Request, res: Response): Promise<void> 
 export const updatePerfume = async (req: Request, res: Response): Promise<void> => {
   try {
     const { id } = req.params;
-    const perfume = await Perfume.findById(id);
+    let perfume;
+    if (mongoose.Types.ObjectId.isValid(id)) {
+      perfume = await Perfume.findById(id);
+    } else {
+      perfume = await Perfume.findOne({ internalFormulaKey: id });
+    }
 
     if (!perfume) {
       res.status(404).json({ error: 'Perfume not found.' });
@@ -248,7 +253,12 @@ export const updatePerfume = async (req: Request, res: Response): Promise<void> 
     if (perfume.originalBottleImage && updateData.originalBottleImage !== perfume.originalBottleImage) deleteLocalFileFromUrl(perfume.originalBottleImage);
     if (perfume.packagingImage && updateData.packagingImage !== perfume.packagingImage) deleteLocalFileFromUrl(perfume.packagingImage);
 
-    const updatedPerfume = await Perfume.findByIdAndUpdate(id, updateData, { new: true });
+    let updatedPerfume;
+    if (mongoose.Types.ObjectId.isValid(id)) {
+      updatedPerfume = await Perfume.findByIdAndUpdate(id, updateData, { new: true });
+    } else {
+      updatedPerfume = await Perfume.findOneAndUpdate({ internalFormulaKey: id }, updateData, { new: true });
+    }
     res.json(updatedPerfume);
   } catch (error: any) {
     res.status(500).json({ error: 'Failed to update perfume.', message: error.message });
@@ -258,7 +268,13 @@ export const updatePerfume = async (req: Request, res: Response): Promise<void> 
 export const deletePerfume = async (req: Request, res: Response): Promise<void> => {
   try {
     const { id } = req.params;
-    const perfume = await Perfume.findById(id);
+    let perfume;
+    if (mongoose.Types.ObjectId.isValid(id)) {
+      perfume = await Perfume.findById(id);
+    } else {
+      perfume = await Perfume.findOne({ internalFormulaKey: id });
+    }
+
     if (!perfume) {
       res.status(404).json({ error: 'Perfume not found.' });
       return;
@@ -274,7 +290,11 @@ export const deletePerfume = async (req: Request, res: Response): Promise<void> 
     deleteLocalFileFromUrl(perfume.originalBottleImage);
     deleteLocalFileFromUrl(perfume.packagingImage);
 
-    await Perfume.findByIdAndDelete(id);
+    if (mongoose.Types.ObjectId.isValid(id)) {
+      await Perfume.findByIdAndDelete(id);
+    } else {
+      await Perfume.deleteOne({ internalFormulaKey: id });
+    }
     res.json({ message: 'Perfume deleted successfully.' });
   } catch (error: any) {
     res.status(500).json({ error: 'Failed to delete perfume.', message: error.message });

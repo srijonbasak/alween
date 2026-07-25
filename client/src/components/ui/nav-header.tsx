@@ -1,4 +1,4 @@
-"use client"; 
+"use client";
 
 import React, { useRef, useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
@@ -46,44 +46,39 @@ function NavHeader({ tabs = DEFAULT_TABS }: { tabs?: TabItem[] }) {
         initial={{ y: -50, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         transition={{ type: "spring", stiffness: 280, damping: 22 }}
-        className={`sticky z-50 w-full flex justify-center px-3 sm:px-6 pointer-events-none transition-all duration-300 ${
-          isScrolled ? "top-2 sm:top-3" : "top-4 sm:top-5"
-        }`}
+        className={`sticky z-50 w-full flex justify-center px-3 sm:px-6 pointer-events-none transition-all duration-300 ${isScrolled ? "top-2 sm:top-3" : "top-4 sm:top-5"
+          }`}
       >
         {/* Dynamic 2D Contraction Container (Contracts both Horizontally and Vertically) */}
-        <motion.div 
+        <motion.div
           layout
           transition={{ type: "spring", stiffness: 340, damping: 28 }}
-          className={`pointer-events-auto relative w-full flex items-center justify-between gap-2 sm:gap-4 transition-all duration-300 ${
-            isScrolled ? "max-w-3xl" : "max-w-5xl"
-          }`}
+          className={`pointer-events-auto relative w-full flex items-center justify-between gap-2 sm:gap-4 transition-all duration-300 ${isScrolled ? "max-w-3xl" : "max-w-5xl"
+            }`}
         >
-          
+
           {/* Ambient Gold Radial Glow behind the floating pill */}
           <div className="absolute inset-0 rounded-full bg-gradient-to-r from-amber-400/20 via-amber-200/10 to-amber-500/20 blur-xl opacity-70 animate-pulse pointer-events-none" style={{ animationDuration: '4s' }} />
 
           {/* Main Floating Glassmorphic Navbar Pill */}
-          <div className={`relative flex items-center justify-between gap-2 sm:gap-4 rounded-full border border-black/15 bg-white/90 dark:bg-stone-900/90 backdrop-blur-xl shadow-[0_12px_40px_rgba(0,0,0,0.12)] w-full transition-all duration-300 ${
-            isScrolled ? "p-1 sm:p-1.5 shadow-lg" : "p-1.5 sm:p-2.5 shadow-2xl"
-          }`}>
-            
+          <div className={`relative flex items-center justify-between gap-2 sm:gap-4 rounded-full border border-black/15 bg-white/90 dark:bg-stone-900/90 backdrop-blur-xl shadow-[0_12px_40px_rgba(0,0,0,0.12)] w-full transition-all duration-300 ${isScrolled ? "p-1 sm:p-1.5 shadow-lg" : "p-1.5 sm:p-2.5 shadow-2xl"
+            }`}>
+
             {/* Brand Logo */}
             <Link href="/" className="flex items-center pl-2 sm:pl-3 group shrink-0">
-              <motion.div 
+              <motion.div
                 whileHover={{ scale: 1.06 }}
                 whileTap={{ scale: 0.95 }}
                 className="flex flex-col items-center justify-center text-center"
               >
-                <img 
-                  src="/logo_top.png" 
-                  alt="Alween Luxury" 
-                  className={`object-contain transition-all duration-300 ${
-                    isScrolled ? "h-4 sm:h-5 mb-0.5" : "h-6 sm:h-7 mb-0.5"
-                  }`} 
+                <img
+                  src="/logo_top.png"
+                  alt="Alween Luxury"
+                  className={`object-contain transition-all duration-300 ${isScrolled ? "h-4 sm:h-5 mb-0.5" : "h-6 sm:h-7 mb-0.5"
+                    }`}
                 />
-                <span className={`font-extrabold tracking-[0.35em] text-stone-900 dark:text-white font-sans uppercase leading-none transition-all duration-300 ${
-                  isScrolled ? "text-[7px] sm:text-[7.5px]" : "text-[8.5px] sm:text-[9.5px]"
-                }`}>
+                <span className={`font-extrabold tracking-[0.35em] text-stone-900 dark:text-white font-sans uppercase leading-none transition-all duration-300 ${isScrolled ? "text-[7px] sm:text-[7.5px]" : "text-[8.5px] sm:text-[9.5px]"
+                  }`}>
                   ALWEEN
                 </span>
               </motion.div>
@@ -110,9 +105,8 @@ function NavHeader({ tabs = DEFAULT_TABS }: { tabs?: TabItem[] }) {
                 whileHover={{ scale: 1.08 }}
                 whileTap={{ scale: 0.92 }}
                 onClick={() => setIsSearchOpen(true)}
-                className={`flex items-center justify-center text-stone-900 dark:text-white hover:bg-stone-100 dark:hover:bg-stone-800 rounded-full transition-all duration-300 border border-stone-200 dark:border-stone-700 cursor-pointer ${
-                  isScrolled ? "h-7 w-7" : "h-8 sm:h-9 w-8 sm:w-9"
-                }`}
+                className={`flex items-center justify-center text-stone-900 dark:text-white hover:bg-stone-100 dark:hover:bg-stone-800 rounded-full transition-all duration-300 border border-stone-200 dark:border-stone-700 cursor-pointer ${isScrolled ? "h-7 w-7" : "h-8 sm:h-9 w-8 sm:w-9"
+                  }`}
                 aria-label="Search Perfumes"
                 title="Search Perfumes"
               >
@@ -124,9 +118,8 @@ function NavHeader({ tabs = DEFAULT_TABS }: { tabs?: TabItem[] }) {
                 whileHover={{ scale: 1.05, y: -1 }}
                 whileTap={{ scale: 0.95 }}
                 onClick={() => setIsDrawerOpen(true)}
-                className={`relative flex items-center justify-center rounded-full bg-stone-900 text-white hover:bg-stone-800 transition-all duration-300 font-bold gap-1.5 shadow-md shadow-stone-900/10 border border-stone-800 cursor-pointer ${
-                  isScrolled ? "h-7 sm:h-8 px-2.5 text-[10px]" : "h-8 sm:h-9 px-3 sm:px-3.5 text-xs"
-                }`}
+                className={`relative flex items-center justify-center rounded-full bg-stone-900 text-white hover:bg-stone-800 transition-all duration-300 font-bold gap-1.5 shadow-md shadow-stone-900/10 border border-stone-800 cursor-pointer ${isScrolled ? "h-7 sm:h-8 px-2.5 text-[10px]" : "h-8 sm:h-9 px-3 sm:px-3.5 text-xs"
+                  }`}
                 aria-label="Shopping Cart"
               >
                 <ShoppingBag className={isScrolled ? "h-3 w-3" : "h-3.5 w-3.5"} />
@@ -151,9 +144,8 @@ function NavHeader({ tabs = DEFAULT_TABS }: { tabs?: TabItem[] }) {
                 whileHover={{ scale: 1.08 }}
                 whileTap={{ scale: 0.92 }}
                 onClick={() => setIsMobileMenuOpen(true)}
-                className={`md:hidden flex items-center justify-center text-stone-900 dark:text-white hover:bg-stone-100 dark:hover:bg-stone-800 rounded-full transition-all duration-300 border border-stone-200 dark:border-stone-700 cursor-pointer ${
-                  isScrolled ? "h-7 w-7" : "h-8 w-8"
-                }`}
+                className={`md:hidden flex items-center justify-center text-stone-900 dark:text-white hover:bg-stone-100 dark:hover:bg-stone-800 rounded-full transition-all duration-300 border border-stone-200 dark:border-stone-700 cursor-pointer ${isScrolled ? "h-7 w-7" : "h-8 w-8"
+                  }`}
                 aria-label="Toggle Mobile Menu"
               >
                 <Menu className="h-4 w-4" />
@@ -266,11 +258,10 @@ const Tab = ({
           left: ref.current.offsetLeft,
         });
       }}
-      className={`relative z-10 block cursor-pointer uppercase text-white mix-blend-difference font-bold tracking-wider transition-all duration-300 ${
-        isScrolled 
-          ? "px-2 py-1 text-[10.5px] md:px-2.5 md:text-xs" 
+      className={`relative z-10 block cursor-pointer uppercase text-white mix-blend-difference font-bold tracking-wider transition-all duration-300 ${isScrolled
+          ? "px-2 py-1 text-[10.5px] md:px-2.5 md:text-xs"
           : "px-3 py-1.5 text-xs md:px-3.5 md:py-2 md:text-sm"
-      }`}
+        }`}
     >
       {href ? (
         <Link href={href} className="block w-full h-full">
@@ -288,9 +279,8 @@ const Cursor = ({ position, isScrolled }: { position: any; isScrolled?: boolean 
     <motion.li
       animate={position}
       transition={{ type: "spring", stiffness: 420, damping: 30 }}
-      className={`absolute z-0 rounded-full bg-stone-900 shadow-[0_0_15px_rgba(0,0,0,0.3)] transition-all duration-300 ${
-        isScrolled ? "h-6 md:h-7" : "h-7 md:h-9"
-      }`}
+      className={`absolute z-0 rounded-full bg-stone-900 shadow-[0_0_15px_rgba(0,0,0,0.3)] transition-all duration-300 ${isScrolled ? "h-6 md:h-7" : "h-7 md:h-9"
+        }`}
     />
   );
 };
