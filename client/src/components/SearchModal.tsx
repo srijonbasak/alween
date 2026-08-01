@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect, useRef } from 'react';
+import Image from 'next/image';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Search, X, ShoppingCart, ArrowRight, Sparkles, Loader2 } from 'lucide-react';
 import Link from 'next/link';
@@ -170,7 +171,7 @@ export const SearchModal: React.FC = () => {
                           className="flex items-center gap-3.5 flex-1 min-w-0"
                         >
                           <div className="h-14 w-14 rounded-lg overflow-hidden border border-stone-200 shrink-0 bg-white">
-                            <img src={mainImage} alt={perfume.name} className="h-full w-full object-cover group-hover:scale-105 transition duration-500" />
+                            <Image src={mainImage} alt={perfume.name} fill className="object-cover group-hover:scale-105 transition duration-500" sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw" />
                           </div>
                           <div className="min-w-0">
                             <h4 className="text-xs sm:text-sm font-bold text-stone-900 truncate font-sans uppercase group-hover:text-amber-600 transition-colors">

@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import Image from 'next/image';
 import Link from 'next/link';
 import { Header } from '../../../components/Header';
 import { Footerdemo } from '../../../components/ui/footer-section';
@@ -206,11 +207,7 @@ export default function PerfumeProductPage({ params }: { params: Promise<{ id: s
                   {perfume.perfumeCategory === 'original' ? 'Original Bottle' : 'Inspired Scent'}
                 </div>
 
-                <img
-                  src={mainImage}
-                  alt={perfume.name}
-                  className="h-full w-full object-cover"
-                />
+                <Image src={mainImage} alt={perfume.name} fill className="object-cover" sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw" />
               </div>
 
               {/* Thumbnails list */}
@@ -223,7 +220,7 @@ export default function PerfumeProductPage({ params }: { params: Promise<{ id: s
                       className={`h-12 w-12 rounded-lg overflow-hidden border-2 shrink-0 transition ${activeImageIdx === index ? 'border-primary' : 'border-slate-200 hover:border-slate-350'
                         }`}
                     >
-                      <img src={url} alt="" className="h-full w-full object-cover" />
+                      <Image src={url} alt="" fill className="object-cover" sizes="(max-width: 768px) 100vw, 50vw" />
                     </button>
                   ))}
                 </div>

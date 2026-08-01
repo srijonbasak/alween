@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import Image from 'next/image';
 import { Header } from '../../components/Header';
 import { Footerdemo } from '../../components/ui/footer-section';
 import { CheckoutDrawer } from '../../components/CheckoutDrawer';
@@ -317,8 +318,8 @@ export default function ComboBuilderPage() {
                         onClick={() => handleSelectPerfumeForActiveSlot(perfume)}
                         className="flex items-center gap-3 p-2.5 rounded-xl border border-slate-200 bg-white hover:border-primary/50 transition cursor-pointer group"
                       >
-                        <div className="h-10 w-10 shrink-0 overflow-hidden rounded bg-slate-50 border border-slate-100">
-                          <img src={perfume.imageUrls[0]} alt={perfume.name} className="h-full w-full object-cover" />
+                        <div className="relative h-10 w-10 shrink-0 overflow-hidden rounded bg-slate-50 border border-slate-100">
+                          <Image src={perfume.imageUrls && perfume.imageUrls.length > 0 ? perfume.imageUrls[0] : 'https://images.unsplash.com/photo-1547887537-6158d64c35b3?auto=format&fit=crop&q=80&w=600'} alt={perfume.name} fill className="object-cover" sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw" />
                         </div>
                         <div className="flex-1 min-w-0">
                           <div className="font-sans text-xs font-bold text-slate-800 group-hover:text-primary truncate">

@@ -19,11 +19,11 @@ const cormorant = Cormorant_Garamond({
 export const metadata: Metadata = {
   metadataBase: new URL('https://alween.com'),
   title: "Alween Luxury Perfumes | Authentic Perfume Decants in Bangladesh",
-  description: "Experience authentic, premium luxury perfume decants in Bangladesh. Shop inspired creations, custom decant combos, and pre-made fragrance gift sets with fast delivery.",
+  description: "Shop perfume decants and full bottles in Bangladesh. Order custom combos and pre-made fragrance sets.",
   keywords: "buy perfume decants bd, authentic perfumes bangladesh, designer fragrance samples, alween perfumes, custom decant combos, long lasting perfume bd",
   openGraph: {
     title: "Alween Luxury Perfumes",
-    description: "Premium designer perfume decants in Bangladesh. Authentic high-end fragrances.",
+    description: "Perfume decants and full bottles in Bangladesh.",
     url: "https://alween.com",
     siteName: "Alween Luxury Scents",
     locale: "en_BD",
@@ -45,6 +45,7 @@ export default function RootLayout({
     '@context': 'https://schema.org',
     '@type': 'Store',
     name: 'Alween Luxury Perfumes',
+    url: 'https://alween.com',
     image: 'https://alween.com/logo.png',
     description: 'Premium luxury perfume decants in Bangladesh.',
     currenciesAccepted: 'BDT',

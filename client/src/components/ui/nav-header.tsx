@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useRef, useState, useEffect } from "react";
+import Image from 'next/image';
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
 import { ShoppingBag, Award, Menu, X, Sparkles, Search } from "lucide-react";
@@ -58,7 +59,7 @@ function NavHeader({ tabs = DEFAULT_TABS }: { tabs?: TabItem[] }) {
         >
 
           {/* Ambient Gold Radial Glow behind the floating pill */}
-          <div className="absolute inset-0 rounded-full bg-gradient-to-r from-amber-400/20 via-amber-200/10 to-amber-500/20 blur-xl opacity-70 animate-pulse pointer-events-none" style={{ animationDuration: '4s' }} />
+          <div className="absolute inset-0 rounded-full bg-gradient-to-r from-amber-400/20 via-amber-200/10 to-amber-500/20 blur-xl opacity-70 pointer-events-none" />
 
           {/* Main Floating Glassmorphic Navbar Pill */}
           <div className={`relative flex items-center justify-between gap-2 sm:gap-4 rounded-full border border-black/15 bg-white/90 dark:bg-stone-900/90 backdrop-blur-xl shadow-[0_12px_40px_rgba(0,0,0,0.12)] w-full transition-all duration-300 ${isScrolled ? "p-1 sm:p-1.5 shadow-lg" : "p-1.5 sm:p-2.5 shadow-2xl"
@@ -71,9 +72,11 @@ function NavHeader({ tabs = DEFAULT_TABS }: { tabs?: TabItem[] }) {
                 whileTap={{ scale: 0.95 }}
                 className="flex flex-col items-center justify-center text-center"
               >
-                <img
+                <Image
                   src="/logo_top.png"
                   alt="Alween Luxury"
+                  width={150}
+                  height={48}
                   className={`object-contain transition-all duration-300 ${isScrolled ? "h-4 sm:h-5 mb-0.5" : "h-6 sm:h-7 mb-0.5"
                     }`}
                 />
@@ -183,7 +186,7 @@ function NavHeader({ tabs = DEFAULT_TABS }: { tabs?: TabItem[] }) {
               <div>
                 <div className="flex items-center justify-between mb-8 pb-4 border-b border-stone-100 dark:border-stone-800">
                   <Link href="/" onClick={() => setIsMobileMenuOpen(false)} className="flex flex-col items-center">
-                    <img src="/logo_top.png" alt="Alween" className="h-6 object-contain mb-0.5" />
+                    <Image src="/logo_top.png" alt="Alween" width={100} height={24} className="h-6 object-contain mb-0.5" />
                     <span className="text-[8px] font-extrabold tracking-[0.3em] text-stone-900 dark:text-white uppercase font-sans">ALWEEN</span>
                   </Link>
                   <motion.button

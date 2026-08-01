@@ -1,12 +1,13 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import Image from 'next/image';
 import { Header } from '../../components/Header';
 import { API_URL, safeParseResponse } from '../../lib/api';
 import {
   Settings, Database, Users, Plus, Trash2, Edit, AlertCircle, Save,
   Loader2, LogOut, CheckCircle, ClipboardList, Tag, ExternalLink, Check, Eye,
-  Layers, Package
+  Layers, Package, EyeOff
 } from 'lucide-react';
 
 interface Perfume {
@@ -102,6 +103,10 @@ export default function AdminPage() {
   // Login fields
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
+  const [showAdminTempPassword, setShowAdminTempPassword] = useState(false);
+  const [showCurrentAdminPassword, setShowCurrentAdminPassword] = useState(false);
+  const [showNewAdminPasswordVal, setShowNewAdminPasswordVal] = useState(false);
   const [authError, setAuthError] = useState('');
 
   // Tab Control
@@ -877,7 +882,7 @@ export default function AdminPage() {
                       <div className="flex gap-1 max-w-[100px] overflow-x-auto">
                         {(perfume.imageUrls || []).map((url, i) => (
                           <div key={i} className="h-9 w-9 rounded overflow-hidden bg-slate-100 border border-slate-200 shrink-0">
-                            <img src={url} alt="" className="h-full w-full object-cover" />
+                            <Image src={url} alt="" fill className="object-cover" sizes="(max-width: 768px) 100vw, 50vw" />
                           </div>
                         ))}
                         {(!perfume.imageUrls || perfume.imageUrls.length === 0) && (
@@ -932,7 +937,7 @@ export default function AdminPage() {
                 <div>
                   <div className="h-40 w-full rounded-lg overflow-hidden bg-slate-50 border border-slate-150 mb-3 relative group">
                     {perfume.imageUrls && perfume.imageUrls.length > 0 ? (
-                      <img src={perfume.imageUrls[0]} alt={perfume.name} className="h-full w-full object-cover group-hover:scale-105 transition duration-300" />
+                      <Image src={perfume.imageUrls[0]} alt={perfume.name} fill className="object-cover group-hover:scale-105 transition duration-300" sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw" />
                     ) : (
                       <div className="h-full w-full flex items-center justify-center text-slate-400 font-mono text-[9px]">
                         NO IMAGE
@@ -1010,21 +1015,30 @@ export default function AdminPage() {
                   placeholder="admin@alweenfragrance.com"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="w-full bg-white border border-slate-300 rounded-lg px-3 py-2 text-xs focus:outline-none focus:border-primary text-slate-800"
+                  className="w-full bg-white border border-slate-300 rounded-lg pl-3 pr-10 py-2 text-xs focus:outline-none focus:border-primary text-slate-800"
                 />
               </div>
               <div>
                 <label className="block text-[10px] font-bold tracking-wider text-slate-500 uppercase mb-1.5">
                   Password Code
                 </label>
-                <input
-                  type="password"
-                  required
-                  placeholder="••••••••"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  className="w-full bg-white border border-slate-300 rounded-lg px-3 py-2 text-xs focus:outline-none focus:border-primary text-slate-800"
-                />
+                <div className="relative">
+                  <input
+                    type={showPassword ? "text" : "password"}
+                    required
+                    placeholder="••••••••"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    className="w-full bg-white border border-slate-300 rounded-lg pl-3 pr-10 py-2 text-xs focus:outline-none focus:border-primary text-slate-800"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute inset-y-0 right-0 pr-3 flex items-center text-slate-400 hover:text-slate-600 z-10"
+                  >
+                    {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                  </button>
+                </div>
               </div>
               {authError && (
                 <div className="text-red-650 text-xs font-semibold bg-red-50 border border-red-200 rounded-lg p-3">
@@ -1047,7 +1061,7 @@ export default function AdminPage() {
           {/* Left Sidebar Menu */}
           <div className="w-64 border-r border-[#EAE5DB] bg-[#FAF8F5] p-5 flex flex-col gap-6 font-sans shrink-0 h-full overflow-y-auto">
             <div className="flex items-center gap-3 border-b border-[#EAE5DB] pb-4">
-              <img src="/logo.png" alt="Alween Logo" className="h-8 w-8 object-contain" />
+              <Image src="/logo.png" alt="Alween Logo" width={32} height={32} className="object-contain" priority />
               <div>
                 <h2 className="text-xs font-black tracking-[0.15em] text-slate-900 uppercase leading-none">
                   ALWEEN LUXURY
@@ -1669,7 +1683,7 @@ export default function AdminPage() {
                             <div className="flex flex-wrap gap-2">
                               {existingImages.map((url, idx) => (
                                 <div key={idx} className="relative h-12 w-12 rounded-lg overflow-hidden border border-slate-200 bg-slate-100 group">
-                                  <img src={url} alt="" className="h-full w-full object-cover" />
+                                  <Image src={url} alt="" fill className="object-cover" sizes="(max-width: 768px) 100vw, 50vw" />
                                   <button
                                     type="button"
                                     onClick={() => setExistingImages(prev => prev.filter((_, i) => i !== idx))}
@@ -1797,7 +1811,7 @@ export default function AdminPage() {
                             required
                             value={editCustomerName}
                             onChange={(e) => setEditCustomerName(e.target.value)}
-                            className="w-full bg-white border border-slate-300 rounded-lg px-3 py-2 text-xs focus:outline-none focus:border-primary text-slate-800"
+                            className="w-full bg-white border border-slate-300 rounded-lg pl-3 pr-10 py-2 text-xs focus:outline-none focus:border-primary text-slate-800"
                           />
                         </div>
 
@@ -1810,7 +1824,7 @@ export default function AdminPage() {
                             required
                             value={editCustomerPhone}
                             onChange={(e) => setEditCustomerPhone(e.target.value)}
-                            className="w-full bg-white border border-slate-300 rounded-lg px-3 py-2 text-xs focus:outline-none focus:border-primary text-slate-800"
+                            className="w-full bg-white border border-slate-300 rounded-lg pl-3 pr-10 py-2 text-xs focus:outline-none focus:border-primary text-slate-800"
                           />
                         </div>
                       </div>
@@ -1825,7 +1839,7 @@ export default function AdminPage() {
                             required
                             value={editCustomerEmail}
                             onChange={(e) => setEditCustomerEmail(e.target.value)}
-                            className="w-full bg-white border border-slate-300 rounded-lg px-3 py-2 text-xs focus:outline-none focus:border-primary text-slate-800"
+                            className="w-full bg-white border border-slate-300 rounded-lg pl-3 pr-10 py-2 text-xs focus:outline-none focus:border-primary text-slate-800"
                           />
                         </div>
 
@@ -1838,7 +1852,7 @@ export default function AdminPage() {
                             required
                             value={editTotalPrice}
                             onChange={(e) => setEditTotalPrice(Number(e.target.value))}
-                            className="w-full bg-white border border-slate-300 rounded-lg px-3 py-2 text-xs focus:outline-none focus:border-primary text-slate-800 font-mono"
+                            className="w-full bg-white border border-slate-300 rounded-lg pl-3 pr-10 py-2 text-xs focus:outline-none focus:border-primary text-slate-800 font-mono"
                           />
                         </div>
                       </div>
@@ -1857,7 +1871,7 @@ export default function AdminPage() {
                             required
                             value={editStreet}
                             onChange={(e) => setEditStreet(e.target.value)}
-                            className="w-full bg-white border border-slate-300 rounded-lg px-3 py-2 text-xs focus:outline-none focus:border-primary text-slate-800"
+                            className="w-full bg-white border border-slate-300 rounded-lg pl-3 pr-10 py-2 text-xs focus:outline-none focus:border-primary text-slate-800"
                           />
                         </div>
 
@@ -1871,7 +1885,7 @@ export default function AdminPage() {
                               required
                               value={editCity}
                               onChange={(e) => setEditCity(e.target.value)}
-                              className="w-full bg-white border border-slate-300 rounded-lg px-3 py-2 text-xs focus:outline-none focus:border-primary text-slate-800"
+                              className="w-full bg-white border border-slate-300 rounded-lg pl-3 pr-10 py-2 text-xs focus:outline-none focus:border-primary text-slate-800"
                             />
                           </div>
                           <div>
@@ -1883,7 +1897,7 @@ export default function AdminPage() {
                               required
                               value={editPostalCode}
                               onChange={(e) => setEditPostalCode(e.target.value)}
-                              className="w-full bg-white border border-slate-300 rounded-lg px-3 py-2 text-xs focus:outline-none focus:border-primary text-slate-800 font-mono"
+                              className="w-full bg-white border border-slate-300 rounded-lg pl-3 pr-10 py-2 text-xs focus:outline-none focus:border-primary text-slate-800 font-mono"
                             />
                           </div>
                         </div>
@@ -2504,7 +2518,7 @@ export default function AdminPage() {
                           value={newAdminName}
                           onChange={(e) => setNewAdminName(e.target.value)}
                           placeholder="John Doe"
-                          className="w-full bg-white border border-slate-300 rounded-lg px-3 py-2 text-xs focus:outline-none focus:border-primary text-slate-850"
+                          className="w-full bg-white border border-slate-300 rounded-lg pl-3 pr-10 py-2 text-xs focus:outline-none focus:border-primary text-slate-850"
                         />
                       </div>
 
@@ -2518,7 +2532,7 @@ export default function AdminPage() {
                           value={newAdminEmail}
                           onChange={(e) => setNewAdminEmail(e.target.value)}
                           placeholder="admin@alween.com"
-                          className="w-full bg-white border border-slate-300 rounded-lg px-3 py-2 text-xs focus:outline-none focus:border-primary text-slate-850"
+                          className="w-full bg-white border border-slate-300 rounded-lg pl-3 pr-10 py-2 text-xs focus:outline-none focus:border-primary text-slate-850"
                         />
                       </div>
 
@@ -2532,7 +2546,7 @@ export default function AdminPage() {
                           value={newAdminPhone}
                           onChange={(e) => setNewAdminPhone(e.target.value)}
                           placeholder="+88017XXXXXXXX"
-                          className="w-full bg-white border border-slate-300 rounded-lg px-3 py-2 text-xs focus:outline-none focus:border-primary text-slate-850"
+                          className="w-full bg-white border border-slate-300 rounded-lg pl-3 pr-10 py-2 text-xs focus:outline-none focus:border-primary text-slate-850"
                         />
                       </div>
 
@@ -2540,14 +2554,23 @@ export default function AdminPage() {
                         <label className="block text-[9px] font-bold text-slate-500 uppercase tracking-wide mb-1 font-mono">
                           Temporary Password
                         </label>
-                        <input
-                          type="password"
-                          required
-                          value={newAdminPassword}
-                          onChange={(e) => setNewAdminPassword(e.target.value)}
-                          placeholder="••••••••"
-                          className="w-full bg-white border border-slate-300 rounded-lg px-3 py-2 text-xs focus:outline-none focus:border-primary text-slate-850"
-                        />
+                        <div className="relative">
+                          <input
+                            type={showAdminTempPassword ? "text" : "password"}
+                            required
+                            value={newAdminPassword}
+                            onChange={(e) => setNewAdminPassword(e.target.value)}
+                            placeholder="••••••••"
+                            className="w-full bg-white border border-slate-300 rounded-lg pl-3 pr-10 py-2 text-xs focus:outline-none focus:border-primary text-slate-850"
+                          />
+                          <button
+                            type="button"
+                            onClick={() => setShowAdminTempPassword(!showAdminTempPassword)}
+                            className="absolute inset-y-0 right-0 pr-3 flex items-center text-slate-400 hover:text-slate-600 z-10"
+                          >
+                            {showAdminTempPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                          </button>
+                        </div>
                       </div>
 
                       <button
@@ -2577,28 +2600,46 @@ export default function AdminPage() {
                         <label className="block text-[9px] font-bold text-slate-500 uppercase tracking-wide mb-1 font-mono">
                           Current Password
                         </label>
-                        <input
-                          type="password"
-                          required
-                          value={currentAdminPassword}
-                          onChange={(e) => setCurrentAdminPassword(e.target.value)}
-                          placeholder="••••••••"
-                          className="w-full bg-white border border-slate-300 rounded-lg px-3 py-2 text-xs focus:outline-none focus:border-primary text-slate-850"
-                        />
+                        <div className="relative">
+                          <input
+                            type={showCurrentAdminPassword ? "text" : "password"}
+                            required
+                            value={currentAdminPassword}
+                            onChange={(e) => setCurrentAdminPassword(e.target.value)}
+                            placeholder="••••••••"
+                            className="w-full bg-white border border-slate-300 rounded-lg pl-3 pr-10 py-2 text-xs focus:outline-none focus:border-primary text-slate-850"
+                          />
+                          <button
+                            type="button"
+                            onClick={() => setShowCurrentAdminPassword(!showCurrentAdminPassword)}
+                            className="absolute inset-y-0 right-0 pr-3 flex items-center text-slate-400 hover:text-slate-600 z-10"
+                          >
+                            {showCurrentAdminPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                          </button>
+                        </div>
                       </div>
 
                       <div>
                         <label className="block text-[9px] font-bold text-slate-500 uppercase tracking-wide mb-1 font-mono">
                           New Password
                         </label>
-                        <input
-                          type="password"
-                          required
-                          value={newAdminPasswordVal}
-                          onChange={(e) => setNewAdminPasswordVal(e.target.value)}
-                          placeholder="••••••••"
-                          className="w-full bg-white border border-slate-300 rounded-lg px-3 py-2 text-xs focus:outline-none focus:border-primary text-slate-850"
-                        />
+                        <div className="relative">
+                          <input
+                            type={showNewAdminPasswordVal ? "text" : "password"}
+                            required
+                            value={newAdminPasswordVal}
+                            onChange={(e) => setNewAdminPasswordVal(e.target.value)}
+                            placeholder="••••••••"
+                            className="w-full bg-white border border-slate-300 rounded-lg pl-3 pr-10 py-2 text-xs focus:outline-none focus:border-primary text-slate-850"
+                          />
+                          <button
+                            type="button"
+                            onClick={() => setShowNewAdminPasswordVal(!showNewAdminPasswordVal)}
+                            className="absolute inset-y-0 right-0 pr-3 flex items-center text-slate-400 hover:text-slate-600 z-10"
+                          >
+                            {showNewAdminPasswordVal ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                          </button>
+                        </div>
                       </div>
 
                       <button

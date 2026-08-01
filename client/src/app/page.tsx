@@ -1,4 +1,5 @@
 'use client';
+import Image from 'next/image';
 
 import React, { useState, useEffect } from 'react';
 import { Button as NeonButton } from '../components/ui/neon-button';
@@ -310,15 +311,12 @@ export default function LandingPage() {
         whileHover={{ y: -8, scale: 1.015 }}
         transition={{ type: "spring", stiffness: 350, damping: 24 }}
         viewport={{ once: true }}
-        className="group relative flex flex-col justify-between overflow-hidden rounded-2xl bg-white border border-stone-200/80 p-6 shadow-md hover:shadow-2xl hover:border-amber-300/60 transition-all duration-300"
+        onClick={() => openDetails(perfume)}
+        className="group relative flex flex-col justify-between overflow-hidden rounded-2xl bg-white border border-stone-200/80 p-6 shadow-md hover:shadow-2xl hover:border-amber-300/60 transition-all duration-300 cursor-pointer"
       >
         <div>
           <div className="relative aspect-square w-full overflow-hidden rounded-xl bg-slate-50 border border-slate-100 mb-6">
-            <img
-              src={perfume.imageUrls && perfume.imageUrls.length > 0 ? perfume.imageUrls[0] : 'https://images.unsplash.com/photo-1547887537-6158d64c35b3?auto=format&fit=crop&q=80&w=600'}
-              alt={perfume.name}
-              className="h-full w-full object-cover transition duration-700 group-hover:scale-105"
-            />
+            <Image src={perfume.imageUrls && perfume.imageUrls.length > 0 ? perfume.imageUrls[0] : 'https://images.unsplash.com/photo-1547887537-6158d64c35b3?auto=format&fit=crop&q=80&w=600'} alt={perfume.name} fill className="object-cover transition duration-700 group-hover:scale-105" sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw" />
             <div className="absolute inset-0 bg-gradient-to-t from-slate-900/40 via-transparent to-transparent opacity-60" />
 
             <div className="absolute top-3 left-3 flex flex-col gap-1.5">
@@ -528,13 +526,13 @@ export default function LandingPage() {
         <HeroSection
           title={
             <div className="flex flex-col items-center">
-              <img src="/logo_top.png" alt="Alween" className="h-10 sm:h-12 mb-3 sm:mb-4 object-contain" />
-              <span className="whitespace-nowrap tracking-tight font-black uppercase text-[4.2vw] sm:text-4xl md:text-5xl lg:text-6xl block mt-2">
+              <Image src="/logo_top.png" alt="Alween" width={150} height={48} className="h-10 sm:h-12 mb-3 sm:mb-4 object-contain" priority />
+              <h1 className="whitespace-nowrap tracking-tight font-black uppercase text-[4.2vw] sm:text-4xl md:text-5xl lg:text-6xl block mt-2">
                 Discover Luxury Fragrances
-              </span>
+              </h1>
             </div>
           }
-          subtitle="Curated premium perfumes for discerning tastes"
+          subtitle="Premium perfume decants and full bottles."
           images={heroVimeoUrls.map((url, idx) => ({
             src: 'https://images.unsplash.com/photo-1547887537-6158d64c35b3?auto=format&fit=crop&q=80&w=600',
             alt: `Video ${idx + 1}`,
@@ -571,9 +569,9 @@ export default function LandingPage() {
           {/* Inspired Creations */}
           <div>
             <div className="text-center mb-12">
-              <span className="text-[10px] font-bold tracking-[0.3em] text-primary uppercase font-sans">OUR INSPIRED SCENTS</span>
+              <span className="text-[10px] font-bold tracking-[0.3em] text-primary uppercase font-sans">INSPIRED SCENTS</span>
               <h2 className="font-sans text-3xl sm:text-4xl font-black tracking-tight text-slate-900 mt-2">
-                INSPIRED CREATIONS
+                INSPIRED FRAGRANCES
               </h2>
               <div className="mx-auto h-0.5 w-16 bg-primary/30 mt-4" />
             </div>
@@ -590,9 +588,9 @@ export default function LandingPage() {
           {/* Original Masterpieces */}
           <div>
             <div className="text-center mb-12">
-              <span className="text-[10px] font-bold tracking-[0.3em] text-primary uppercase font-sans">PREMIUM ORIGINAL RANGE</span>
+              <span className="text-[10px] font-bold tracking-[0.3em] text-primary uppercase font-sans">ORIGINAL SCENTS</span>
               <h2 className="font-sans text-3xl sm:text-4xl font-black tracking-tight text-slate-900 mt-2">
-                ORIGINAL MASTERPIECES
+                ORIGINAL FRAGRANCES
               </h2>
               <div className="mx-auto h-0.5 w-16 bg-primary/30 mt-4" />
             </div>
@@ -640,14 +638,7 @@ export default function LandingPage() {
                   {/* Left Column */}
                   <div>
                     <div className="relative aspect-square w-full overflow-hidden rounded bg-slate-50 border border-slate-100 shadow-sm">
-                      <img
-                        loading="lazy"
-                        src={selectedPerfume.imageUrls && selectedPerfume.imageUrls.length > 0
-                          ? (selectedPerfume.imageUrls[activeDetailImageIdx] || selectedPerfume.imageUrls[0])
-                          : 'https://images.unsplash.com/photo-1547887537-6158d64c35b3?auto=format&fit=crop&q=80&w=600'}
-                        alt={selectedPerfume.name}
-                        className="h-full w-full object-cover"
-                      />
+                      <Image src={selectedPerfume.imageUrls && selectedPerfume.imageUrls.length > 0 ? (selectedPerfume.imageUrls[activeDetailImageIdx] || selectedPerfume.imageUrls[0]) : 'https://images.unsplash.com/photo-1547887537-6158d64c35b3?auto=format&fit=crop&q=80&w=600'} alt={selectedPerfume.name} fill className="object-cover" sizes="(max-width: 768px) 100vw, 50vw" />
                     </div>
 
                     {/* Thumbnail gallery */}
@@ -660,7 +651,7 @@ export default function LandingPage() {
                             className={`h-11 w-11 rounded overflow-hidden border-2 shrink-0 transition ${activeDetailImageIdx === index ? 'border-primary' : 'border-slate-200'
                               }`}
                           >
-                            <img src={url} alt="" className="h-full w-full object-cover" loading="lazy" />
+                            <Image src={url} alt="" fill className="object-cover" sizes="(max-width: 768px) 100vw, 50vw" />
                           </button>
                         ))}
                       </div>

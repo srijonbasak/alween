@@ -9,18 +9,7 @@ if (!fs.existsSync(uploadDirectory)) {
   fs.mkdirSync(uploadDirectory, { recursive: true });
 }
 
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, uploadDirectory);
-  },
-  filename: (req, file, cb) => {
-    // Sanitize filename to prevent directory traversal and collisions
-    const fileExtension = path.extname(file.originalname).toLowerCase();
-    const sanitizedBase = path.basename(file.originalname, fileExtension)
-      .replace(/[^a-zA-Z0-9-_]/g, '');
-    cb(null, `${Date.now()}-${sanitizedBase}${fileExtension}`);
-  }
-});
+const storage = multer.memoryStorage(); // Store files in memory so Sharp can process them
 
 export const upload = multer({
   storage,
@@ -37,3 +26,36 @@ export const upload = multer({
     }
   }
 });
+
+import sharp from 'sharp';
+import { Request, Response, NextFunction } from 'express';
+
+// Middleware to compress images and save them as webp
+export const compressImages = async (req: Request, res: Response, next: NextFunction) => {
+  if (!req.files || !Array.isArray(req.files)) return next();
+
+  try {
+    await Promise.all(
+      req.files.map(async (file) => {
+        const fileExtension = path.extname(file.originalname).toLowerCase();
+        const sanitizedBase = path.basename(file.originalname, fileExtension)
+          .replace(/[^a-zA-Z0-9-_]/g, '');
+        const filename = `${Date.now()}-${sanitizedBase}.webp`;
+        const filepath = path.join(uploadDirectory, filename);
+
+        await sharp(file.buffer)
+          .resize(1200, 1200, { fit: 'inside', withoutEnlargement: true }) // Max dimensions
+          .webp({ quality: 80, effort: 4 })
+          .toFile(filepath);
+
+        // Update the file object so the controller can read the new filename
+        file.filename = filename;
+        file.path = filepath;
+      })
+    );
+    next();
+  } catch (error) {
+    console.error('Image compression failed:', error);
+    res.status(500).json({ error: 'Image processing failed during upload.' });
+  }
+};

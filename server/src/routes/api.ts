@@ -7,7 +7,7 @@ import { getConfig, updateConfig } from '../controllers/configController';
 import { getCoupons, createCoupon, deleteCoupon, validateCoupon } from '../controllers/couponController';
 import { authenticate, authorizeAdmin } from '../middlewares/auth';
 import { verifyTurnstile } from '../middlewares/turnstile';
-import { upload } from '../middlewares/upload';
+import { upload, compressImages } from '../middlewares/upload';
 
 const router = Router();
 
@@ -27,8 +27,8 @@ router.post('/admin/change-password', authenticate, authorizeAdmin, changeAdminP
 // ==========================================
 router.get('/perfumes', getPerfumes);
 router.get('/perfumes/:id', getPerfumeById);
-router.post('/perfumes', authenticate, authorizeAdmin, upload.any(), createPerfume);
-router.put('/perfumes/:id', authenticate, authorizeAdmin, upload.any(), updatePerfume);
+router.post('/perfumes', authenticate, authorizeAdmin, upload.any(), compressImages, createPerfume);
+router.put('/perfumes/:id', authenticate, authorizeAdmin, upload.any(), compressImages, updatePerfume);
 router.delete('/perfumes/:id', authenticate, authorizeAdmin, deletePerfume);
 
 // ==========================================

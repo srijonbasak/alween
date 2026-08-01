@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, useCallback, useRef } from 'react';
+import Image from 'next/image';
 import { ChevronLeft, ChevronRight, Volume2, VolumeX } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
@@ -17,6 +18,8 @@ export interface CarouselItem {
   src: string;
   alt: string;
   vimeoUrl?: string;
+  objUrl?: string;
+  mtlUrl?: string;
   title?: string;
   description?: string;
   id?: string;
@@ -74,10 +77,12 @@ const VimeoHeroCard: React.FC<{
   return (
     <div className="w-full h-full bg-stone-900 relative overflow-hidden pointer-events-none">
       {/* 1. Instant Luxury Poster Image (Visible IMMEDIATELY, 0ms Delay) */}
-      <img
+      <Image
         src={image.src || 'https://images.unsplash.com/photo-1547887537-6158d64c35b3?auto=format&fit=crop&q=80&w=600'}
         alt={image.alt || 'Alween Luxury Video'}
-        className="absolute inset-0 w-full h-full object-cover transition-transform duration-700"
+        fill
+        sizes="50vw"
+        className="object-cover transition-transform duration-700"
       />
 
       {/* Ambient Gold Shimmer Pulse Loader */}
@@ -278,7 +283,7 @@ export const HeroSection = React.forwardRef<HTMLDivElement, HeroProps>(
                       `,
                       zIndex: isCenter ? 20 : isAdjacent ? 10 : 1,
                       opacity: isCenter ? 1 : isAdjacent ? 0.45 : 0.15,
-                      filter: isCenter ? 'blur(0px)' : 'blur(4px)',
+                      filter: 'blur(0px)',
                       visibility: Math.abs(pos) > (isMobile ? 1 : 2) ? 'hidden' : 'visible',
                     }}
                   >
@@ -291,16 +296,13 @@ export const HeroSection = React.forwardRef<HTMLDivElement, HeroProps>(
                         onVideoEnd={handleVideoEnd}
                       />
                     ) : (
-                      <div className="relative w-full h-full group/card overflow-hidden bg-stone-50">
-                        {/* Perfume Image Cover (Fallback) */}
-                        <img
-                          src={image.src}
-                          alt={image.alt}
-                          className="object-cover w-full h-full transition-transform duration-700 group-hover/card:scale-105"
-                          loading="lazy"
-                        />
-                        <div className="absolute inset-0 bg-gradient-to-t from-slate-950/40 via-transparent to-transparent opacity-50" />
-                      </div>
+                      <Image
+                        src={image.src}
+                        alt={image.alt}
+                        fill
+                        sizes="30vw"
+                        className="object-cover transition-transform duration-700 ease-out group-hover:scale-110"
+                      />
                     )}
                   </div>
                 );

@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import Image from 'next/image';
 import Link from 'next/link';
 import { Footerdemo } from '../../components/ui/footer-section';
 import { useRouter } from 'next/navigation';
@@ -9,7 +10,7 @@ import { CheckoutDrawer } from '../../components/CheckoutDrawer';
 import { useCart } from '../../context/CartContext';
 import { API_URL } from '../../lib/api';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ShoppingBag, Eye, X, ChevronLeft, ChevronRight, Package, Cpu, ArrowLeft, Database } from 'lucide-react';
+import { ShoppingBag, ShoppingCart, Eye, X, ChevronLeft, ChevronRight, Package, Cpu, ArrowLeft, Database } from 'lucide-react';
 
 interface SinglePerfumeRef {
   _id: string;
@@ -75,7 +76,7 @@ export default function CombosPage() {
       });
   }, []);
 
-  const handleAddComboToCart = (combo: Combo) => {
+  const handleAddComboToCart = (combo: Combo, openDrawer: boolean = true) => {
     addToCart({
       id: `${combo._id}-combo`,
       perfumeId: combo._id,
@@ -85,7 +86,9 @@ export default function CombosPage() {
       internalFormulaKey: combo.internalFormulaKey,
       isExcludedFromDiscounts: combo.isExcludedFromDiscounts
     });
-    setIsDrawerOpen(true);
+    if (openDrawer) {
+      setIsDrawerOpen(true);
+    }
   };
 
   const handleOpenDetails = (combo: Combo) => {
@@ -100,12 +103,12 @@ export default function CombosPage() {
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           {/* Header Section */}
           <div className="text-center mb-16">
-            <span className="text-[10px] font-bold tracking-[0.3em] text-primary uppercase font-mono">PRE-COMPILED BUNDLES</span>
+            <span className="text-[10px] font-bold tracking-[0.3em] text-primary uppercase font-mono">FRAGRANCE BUNDLES</span>
             <h1 className="font-sans text-3xl sm:text-5xl font-black tracking-tight text-slate-900 mt-2">
-              EXQUISITE SCENT COMBOS
+              PERFUME COMBOS
             </h1>
             <p className="text-slate-500 text-xs sm:text-sm font-light tracking-wide max-w-lg mx-auto mt-3">
-              Explore pre-compiled luxury decant sets designed by our master blenders, curated to express unified fragrance journeys.
+              Shop pre-selected perfume decant sets.
             </p>
           </div>
 
@@ -134,13 +137,9 @@ export default function CombosPage() {
                   <div>
                     {/* Image Box */}
                     <div className="relative aspect-square w-full rounded-xl overflow-hidden bg-slate-50 border border-slate-100 mb-4 group-hover:border-primary/20 transition-colors">
-                      <img
-                        src={combo.imageUrls && combo.imageUrls.length > 0
+                      <Image src={combo.imageUrls && combo.imageUrls.length > 0
                           ? combo.imageUrls[0]
-                          : 'https://images.unsplash.com/photo-1547887537-6158d64c35b3?auto=format&fit=crop&q=80&w=600'}
-                        alt={combo.name}
-                        className="h-full w-full object-cover group-hover:scale-105 transition-transform duration-500"
-                      />
+                          : 'https://images.unsplash.com/photo-1547887537-6158d64c35b3?auto=format&fit=crop&q=80&w=600'} alt={combo.name} fill className="object-cover group-hover:scale-105 transition-transform duration-500" sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw" />
                       
                       {combo.isExcludedFromDiscounts && (
                         <div className="absolute top-3 left-3 bg-red-500 text-white text-[7px] font-bold tracking-widest px-2 py-0.5 rounded border border-red-600 font-mono uppercase">
@@ -191,12 +190,20 @@ export default function CombosPage() {
                     )}
                   </div>
 
-                  <button
-                    onClick={() => handleAddComboToCart(combo)}
-                    className="w-full rounded-lg bg-primary py-3 text-xs font-bold tracking-widest text-slate-900 hover:bg-primary/80 transition-all duration-300 shadow-sm shadow-primary/10 hover:shadow-md flex items-center justify-center gap-2"
-                  >
-                    <ShoppingBag className="h-4 w-4" /> ADD COMBO TO BASKET
-                  </button>
+                  <div className="flex gap-2">
+                    <button
+                      onClick={() => handleAddComboToCart(combo, false)}
+                      className="flex-1 rounded-lg border border-slate-200 bg-slate-50 py-3 text-[10px] font-bold tracking-widest text-slate-900 hover:bg-slate-100 transition flex items-center justify-center gap-1.5 shadow-sm"
+                    >
+                      <ShoppingCart className="h-4 w-4" /> ADD TO CART
+                    </button>
+                    <button
+                      onClick={() => handleAddComboToCart(combo, true)}
+                      className="flex-1 rounded-lg bg-primary py-3 text-[10px] font-bold tracking-widest text-slate-900 hover:bg-primary/80 transition shadow-sm shadow-primary/10 flex items-center justify-center gap-1.5"
+                    >
+                      <ShoppingBag className="h-4 w-4" /> BUY NOW
+                    </button>
+                  </div>
                 </motion.div>
               ))}
             </div>
@@ -225,13 +232,9 @@ export default function CombosPage() {
                 {/* Left side: Images */}
                 <div>
                   <div className="relative aspect-square w-full overflow-hidden rounded bg-slate-50 border border-slate-100 shadow-sm">
-                    <img
-                      src={selectedCombo.imageUrls && selectedCombo.imageUrls.length > 0
+                    <Image src={selectedCombo.imageUrls && selectedCombo.imageUrls.length > 0
                         ? selectedCombo.imageUrls[activeImageIdx]
-                        : 'https://images.unsplash.com/photo-1547887537-6158d64c35b3?auto=format&fit=crop&q=80&w=600'}
-                      alt={selectedCombo.name}
-                      className="h-full w-full object-cover"
-                    />
+                        : 'https://images.unsplash.com/photo-1547887537-6158d64c35b3?auto=format&fit=crop&q=80&w=600'} alt={selectedCombo.name} fill className="object-cover" sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw" />
                   </div>
 
                   {/* Thumbnail lists */}
@@ -245,7 +248,7 @@ export default function CombosPage() {
                             activeImageIdx === index ? 'border-primary' : 'border-slate-200'
                           }`}
                         >
-                          <img src={url} alt="" className="h-full w-full object-cover" />
+                          <Image src={url} alt="" fill className="object-cover" sizes="(max-width: 768px) 100vw, 50vw" />
                         </button>
                       ))}
                     </div>
@@ -294,15 +297,26 @@ export default function CombosPage() {
                       <span className="text-primary font-bold text-lg">{selectedCombo.pricePerMl.toFixed(2)} BDT</span>
                     </div>
                     
-                    <button
-                      onClick={() => {
-                        handleAddComboToCart(selectedCombo);
-                        setSelectedCombo(null);
-                      }}
-                      className="w-full rounded bg-primary py-3 text-xs font-bold tracking-widest text-slate-900 hover:bg-primary/80 transition flex items-center justify-center gap-2 shadow-md shadow-primary/10"
-                    >
-                      <ShoppingBag className="h-4 w-4" /> ADD COMBO TO BASKET
-                    </button>
+                    <div className="flex gap-2 mt-4">
+                      <button
+                        onClick={() => {
+                          handleAddComboToCart(selectedCombo, false);
+                          setSelectedCombo(null);
+                        }}
+                        className="flex-1 rounded border border-slate-200 bg-slate-50 py-3 text-[10px] font-bold tracking-widest text-slate-900 hover:bg-slate-100 transition flex items-center justify-center gap-1.5 shadow-sm"
+                      >
+                        <ShoppingCart className="h-4 w-4" /> ADD TO CART
+                      </button>
+                      <button
+                        onClick={() => {
+                          handleAddComboToCart(selectedCombo, true);
+                          setSelectedCombo(null);
+                        }}
+                        className="flex-1 rounded bg-primary py-3 text-[10px] font-bold tracking-widest text-slate-900 hover:bg-primary/80 transition flex items-center justify-center gap-1.5 shadow-md shadow-primary/10"
+                      >
+                        <ShoppingBag className="h-4 w-4" /> BUY NOW
+                      </button>
+                    </div>
                   </div>
                 </div>
               </div>

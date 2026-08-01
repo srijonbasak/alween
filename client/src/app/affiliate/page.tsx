@@ -5,18 +5,19 @@ import { Header } from '../../components/Header';
 import { Footerdemo } from '../../components/ui/footer-section';
 import { CheckoutDrawer } from '../../components/CheckoutDrawer';
 import { API_URL } from '../../lib/api';
-import { Award, User, Copy, Check, Info, Users, Gift, ShieldAlert } from 'lucide-react';
+import { Award, User, Copy, Check, Info, Users, Gift, ShieldAlert, Eye, EyeOff } from 'lucide-react';
 
 export default function AffiliatePage() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [currentUser, setCurrentUser] = useState<any>(null);
-  
+
   // Registration / Login form states
   const [isSignup, setIsSignup] = useState(false);
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [phone, setPhone] = useState('');
   const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const [affRefName, setAffRefName] = useState('');
 
   // Affiliate Dashboard states
@@ -160,14 +161,14 @@ export default function AffiliatePage() {
 
       <main className="flex-1 py-12 text-slate-900">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          
+
           <div className="text-center mb-12">
-            <span className="text-[10px] font-bold tracking-[0.3em] text-primary uppercase font-mono">LOYALTY NETWORK</span>
+            <span className="text-[10px] font-bold tracking-[0.3em] text-primary uppercase font-mono">Partner Program</span>
             <h1 className="font-serif text-3xl sm:text-5xl font-black tracking-tight text-slate-900 mt-2 uppercase">
-              AFFILIATE LEDGER PORTAL
+              Affiliate Dashboard
             </h1>
             <p className="text-slate-500 text-xs sm:text-sm font-light tracking-wide max-w-lg mx-auto mt-3">
-              Earn store loyalty points on successful customer references. Bind device identities for lifelong commissions.
+              Earn store credit when friends shop through your link. Enjoy lifetime commissions on all their future purchases.
             </p>
           </div>
 
@@ -175,7 +176,7 @@ export default function AffiliatePage() {
             /* Authentication Panel */
             <div className="mx-auto max-w-md bg-white border border-slate-200 rounded-2xl p-6 sm:p-8 shadow-sm">
               <h3 className="font-serif text-xl font-black text-slate-900 mb-6 text-center uppercase tracking-wide">
-                {isSignup ? 'CREATE PARTNER ACCOUNT' : 'SECURE IDENTITY ACCESS'}
+                {isSignup ? 'Create Affiliate Account' : 'Sign In'}
               </h3>
 
               <form onSubmit={handleAuth} className="space-y-4">
@@ -228,14 +229,23 @@ export default function AffiliatePage() {
                   <label className="block text-[10px] font-bold tracking-wider text-slate-400 uppercase font-mono mb-1.5">
                     Password
                   </label>
-                  <input
-                    type="password"
-                    required
-                    placeholder="••••••••"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    className="w-full bg-[#FAF9F6] border border-slate-200 rounded-lg px-3 py-2 text-sm text-slate-900 focus:outline-none focus:border-primary focus:bg-white"
-                  />
+                  <div className="relative">
+                    <input
+                      type={showPassword ? "text" : "password"}
+                      required
+                      placeholder="••••••••"
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      className="w-full bg-[#FAF9F6] border border-slate-200 rounded-lg pl-3 pr-10 py-2 text-sm text-slate-900 focus:outline-none focus:border-primary focus:bg-white"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowPassword(!showPassword)}
+                      className="absolute inset-y-0 right-0 pr-3 flex items-center text-slate-400 hover:text-slate-600 z-10"
+                    >
+                      {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                    </button>
+                  </div>
                 </div>
 
                 {isSignup && (
@@ -273,7 +283,7 @@ export default function AffiliatePage() {
                   type="submit"
                   className="w-full rounded-lg bg-primary py-3.5 text-xs font-bold tracking-widest text-slate-900 hover:bg-primary/80 transition shadow-md shadow-primary/10"
                 >
-                  {isSignup ? 'REGISTER AS PARTNER' : 'SECURE SIGN IN'}
+                  {isSignup ? 'REGISTER AS PARTNER' : 'SIGN IN'}
                 </button>
               </form>
 
@@ -293,7 +303,7 @@ export default function AffiliatePage() {
           ) : (
             /* Affiliate Dashboard Panel */
             <div className="space-y-8">
-              
+
               {/* Header Profile Actions */}
               <div className="flex justify-between items-center bg-white border border-slate-200 p-5 rounded-2xl shadow-sm">
                 <div className="flex items-center gap-3">
@@ -326,9 +336,9 @@ export default function AffiliatePage() {
                 <div className="max-w-md mx-auto bg-white border border-slate-200 p-6 rounded-2xl shadow-sm">
                   <div className="text-center mb-6">
                     <Award className="h-12 w-12 text-primary mx-auto mb-3" />
-                    <h3 className="font-serif text-lg font-black text-slate-900 uppercase">ENABLE CREATOR ACCESS</h3>
+                    <h3 className="font-serif text-lg font-black text-slate-900 uppercase">Activate Affiliate Profile</h3>
                     <p className="text-xs text-slate-500 mt-1">
-                      Activate affiliate configurations on this account to earn referral credit codes.
+                      Enable your affiliate profile to start earning referral commissions.
                     </p>
                   </div>
 
@@ -364,10 +374,10 @@ export default function AffiliatePage() {
               ) : (
                 /* Active Affiliate Profile Panels */
                 <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-                  
+
                   {/* Referral details (Left) */}
                   <div className="lg:col-span-8 space-y-6">
-                    
+
                     {/* Share widgets */}
                     <div className="bg-white border border-slate-200 p-6 rounded-2xl grid grid-cols-1 md:grid-cols-2 gap-6 shadow-sm">
                       <div>
@@ -457,7 +467,7 @@ export default function AffiliatePage() {
 
                   {/* Points & permanent guest binds (Right) */}
                   <div className="lg:col-span-4 space-y-6">
-                    
+
                     {/* Points Box */}
                     <div className="bg-primary/5 border border-primary/20 p-6 rounded-2xl text-center shadow-sm">
                       <Gift className="h-10 w-10 text-primary mx-auto mb-3" />
@@ -475,8 +485,8 @@ export default function AffiliatePage() {
                     {/* Permanent Guest Binds */}
                     <div className="bg-white border border-slate-200 p-5 rounded-2xl shadow-sm">
                       <h4 className="font-serif text-sm font-black text-slate-900 border-b border-slate-100 pb-2.5 mb-3 flex items-center justify-between uppercase">
-                        <span>LIFETIME GUEST BINDS</span>
-                        <span title="These guests automatically credit your account on future orders, bypassing cookies.">
+                        <span>YOUR REFERRED CUSTOMERS</span>
+                        <span title="These customers are permanently linked to your account. You earn commissions on all their future orders.">
                           <Info className="h-3.5 w-3.5 text-slate-400 cursor-help" />
                         </span>
                       </h4>
@@ -504,9 +514,9 @@ export default function AffiliatePage() {
                     <div className="bg-red-50/50 border border-red-200/65 p-4 rounded-2xl flex items-start gap-2.5 text-slate-500 text-[10px] leading-relaxed shadow-sm">
                       <ShieldAlert className="h-5 w-5 text-red-500 shrink-0 mt-0.5" />
                       <div>
-                        <span className="font-bold text-red-800 font-mono">SELF-REFERRAL SHIELD ACTIVE</span>
+                        <span className="font-bold text-red-800 font-mono">SELF-REFERRALS NOT PERMITTED</span>
                         <p className="mt-0.5 font-light">
-                          Order metrics match login profiles or IP overlays automatically discard referral points balances. Creator code points logic generates only on genuine guest transactions.
+                          Commissions are only granted for genuine purchases made by your referred customers. Self-referrals will not be credited.
                         </p>
                       </div>
                     </div>

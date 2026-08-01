@@ -1,10 +1,11 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import Image from 'next/image';
 import { useCart } from '../context/CartContext';
 import { API_URL, safeParseResponse } from '../lib/api';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, MapPin, Ticket, CheckCircle2, Loader2, Trash2, Plus, Minus } from 'lucide-react';
+import { X, MapPin, Ticket, CheckCircle2, Loader2, Trash2, Plus, Minus, Eye, EyeOff } from 'lucide-react';
 
 export const CheckoutDrawer: React.FC = () => {
   const { cart, removeFromCart, updateQuantity, clearCart, isDrawerOpen, setIsDrawerOpen, affiliateRef } = useCart();
@@ -29,6 +30,7 @@ export const CheckoutDrawer: React.FC = () => {
   // Status & Password
   const [saveAccount, setSaveAccount] = useState(false);
   const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
   const [orderSuccess, setOrderSuccess] = useState<any>(null);
@@ -212,7 +214,7 @@ export const CheckoutDrawer: React.FC = () => {
             {/* Clean White Modal Header with Brand Logo */}
             <div className="flex items-center justify-between px-6 py-4 border-b border-stone-100 bg-white">
               <div className="flex items-center gap-3">
-                <img src="/logo.png" alt="Alween" className="h-6 sm:h-7 object-contain" />
+                <Image src="/logo.png" alt="Alween" width={100} height={28} className="h-6 sm:h-7 object-contain" priority />
                 <span className="h-4 w-px bg-stone-200" />
                 <span className="font-sans font-bold text-stone-900 text-sm sm:text-base">Checkout</span>
               </div>
@@ -293,7 +295,7 @@ export const CheckoutDrawer: React.FC = () => {
                               placeholder="e.g. Safwan Chowdhury"
                               value={name}
                               onChange={(e) => setName(e.target.value)}
-                              className="w-full bg-white border border-stone-200 rounded-lg px-3 py-2 text-sm text-stone-900 focus:outline-none focus:border-stone-900"
+                              className="w-full bg-white border border-stone-200 rounded-lg pl-3 pr-10 py-2 text-sm text-stone-900 focus:outline-none focus:border-stone-900"
                             />
                           </div>
                           <div>
@@ -306,7 +308,7 @@ export const CheckoutDrawer: React.FC = () => {
                               placeholder="017XXXXXXXX"
                               value={phone}
                               onChange={(e) => setPhone(e.target.value)}
-                              className="w-full bg-white border border-stone-200 rounded-lg px-3 py-2 text-sm text-stone-900 focus:outline-none focus:border-stone-900"
+                              className="w-full bg-white border border-stone-200 rounded-lg pl-3 pr-10 py-2 text-sm text-stone-900 focus:outline-none focus:border-stone-900"
                             />
                           </div>
                         </div>
@@ -320,7 +322,7 @@ export const CheckoutDrawer: React.FC = () => {
                             placeholder="customer@gmail.com"
                             value={email}
                             onChange={(e) => setEmail(e.target.value)}
-                            className="w-full bg-white border border-stone-200 rounded-lg px-3 py-2 text-sm text-stone-900 focus:outline-none focus:border-stone-900"
+                            className="w-full bg-white border border-stone-200 rounded-lg pl-3 pr-10 py-2 text-sm text-stone-900 focus:outline-none focus:border-stone-900"
                           />
                         </div>
                       </div>
@@ -353,7 +355,7 @@ export const CheckoutDrawer: React.FC = () => {
                               placeholder="House 12, Road 4, Sector 7, Uttara"
                               value={streetAddress}
                               onChange={(e) => setStreetAddress(e.target.value)}
-                              className="w-full bg-white border border-stone-200 rounded-lg px-3 py-2 text-sm text-stone-900 focus:outline-none focus:border-stone-900"
+                              className="w-full bg-white border border-stone-200 rounded-lg pl-3 pr-10 py-2 text-sm text-stone-900 focus:outline-none focus:border-stone-900"
                             />
                           </div>
 
@@ -368,7 +370,7 @@ export const CheckoutDrawer: React.FC = () => {
                                 placeholder="Dhaka"
                                 value={city}
                                 onChange={(e) => setCity(e.target.value)}
-                                className="w-full bg-white border border-stone-200 rounded-lg px-3 py-2 text-sm text-stone-900 focus:outline-none focus:border-stone-900"
+                                className="w-full bg-white border border-stone-200 rounded-lg pl-3 pr-10 py-2 text-sm text-stone-900 focus:outline-none focus:border-stone-900"
                               />
                             </div>
                             <div>
@@ -380,7 +382,7 @@ export const CheckoutDrawer: React.FC = () => {
                                 placeholder="1230"
                                 value={postalCode}
                                 onChange={(e) => setPostalCode(e.target.value)}
-                                className="w-full bg-white border border-stone-200 rounded-lg px-3 py-2 text-sm text-stone-900 focus:outline-none focus:border-stone-900"
+                                className="w-full bg-white border border-stone-200 rounded-lg pl-3 pr-10 py-2 text-sm text-stone-900 focus:outline-none focus:border-stone-900"
                               />
                             </div>
                           </div>
@@ -410,14 +412,23 @@ export const CheckoutDrawer: React.FC = () => {
                               <label className="block text-xs font-semibold text-stone-600 mb-1">
                                 Choose Account Password
                               </label>
-                              <input
-                                type="password"
-                                required={saveAccount}
-                                placeholder="••••••••"
-                                value={password}
-                                onChange={(e) => setPassword(e.target.value)}
-                                className="w-full bg-white border border-stone-200 rounded-lg px-3 py-2 text-sm text-stone-900 focus:outline-none focus:border-stone-900"
-                              />
+                              <div className="relative">
+                                <input
+                                  type={showPassword ? "text" : "password"}
+                                  required={saveAccount}
+                                  placeholder="••••••••"
+                                  value={password}
+                                  onChange={(e) => setPassword(e.target.value)}
+                                  className="w-full bg-white border border-stone-200 rounded-lg pl-3 pr-10 py-2 text-sm text-stone-900 focus:outline-none focus:border-stone-900"
+                                />
+                                <button
+                                  type="button"
+                                  onClick={() => setShowPassword(!showPassword)}
+                                  className="absolute inset-y-0 right-0 pr-3 flex items-center text-stone-400 hover:text-stone-600 z-10"
+                                >
+                                  {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                                </button>
+                              </div>
                             </motion.div>
                           )}
                         </AnimatePresence>

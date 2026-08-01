@@ -1,4 +1,6 @@
 import React, { useState, useEffect, useRef, HTMLAttributes } from 'react';
+import Image from 'next/image';
+import { motion, useAnimation, useMotionValue } from "framer-motion";
 
 // A simple utility for conditional class names
 const cn = (...classes: (string | undefined | null | false)[]) => {
@@ -182,11 +184,13 @@ const CircularGallery = React.forwardRef<HTMLDivElement, CircularGalleryProps>(
                   
                   {/* Image container with slow smooth zoom animation */}
                   <div className="absolute inset-0 w-full h-full overflow-hidden bg-stone-950">
-                    <img
+                    <Image
                       src={item.photo.url}
                       alt={item.photo.text}
+                      fill
+                      sizes="30vw"
                       draggable={false}
-                      className="absolute inset-0 w-full h-full object-cover select-none transition-transform duration-700 ease-out group-hover:scale-105"
+                      className="object-cover select-none transition-transform duration-700 ease-out group-hover:scale-105"
                       style={{ objectPosition: item.photo.pos || 'center' }}
                     />
                     {/* Shadow overlay to improve text readability */}
