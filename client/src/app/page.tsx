@@ -648,7 +648,7 @@ export default function LandingPage() {
                           <button
                             key={index}
                             onClick={() => setActiveDetailImageIdx(index)}
-                            className={`h-11 w-11 rounded overflow-hidden border-2 shrink-0 transition ${activeDetailImageIdx === index ? 'border-primary' : 'border-slate-200'
+                            className={`relative h-11 w-11 rounded overflow-hidden border-2 shrink-0 transition ${activeDetailImageIdx === index ? 'border-primary' : 'border-slate-200'
                               }`}
                           >
                             <Image src={url} alt="" fill className="object-cover" sizes="(max-width: 768px) 100vw, 50vw" />
