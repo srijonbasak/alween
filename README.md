@@ -1,5 +1,7 @@
 # Alween
 
+Alween — TypeScript utilities and components for building modern web applications.
+
 A Next.js + TypeScript web application starter.
 
 This repository contains a TypeScript frontend scaffolded with create-next-app. The primary application lives in the `client/` directory (Next.js + TypeScript).
